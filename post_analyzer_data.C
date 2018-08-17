@@ -17,6 +17,8 @@
 #include <math.h>
 #include <vector>
 #include "myHelper.h"
+#include "selections.h"
+#include "scale_factors.h"
 
 
 
@@ -31,7 +33,7 @@ int main(int argc, const char* argv[]){
 		std::cout<<"Please enter a valid value for reportEvery (parameter 4)."<<std::endl;
     		return 1;
   	}
-	post_analyzer t(argv[1]);
+	post_analyzer_data t(argv[1]);
 	t.Loop(maxevents,reportEvery, argv[2]);
 	return 0;
 }
@@ -39,10 +41,10 @@ int main(int argc, const char* argv[]){
 
 
 
-void post_analyzer::Loop(Long64_t maxevents, int reportEvery, const char* save_name){
+void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, const char* save_name){
 	if (fChain==0) return;
 
-	Long64_t nentries = fChain->GetEntriesFast();
+	Long64_t nentries = fChain->GetEntries();
    	Long64_t nentriesToCheck = nentries;
    	if (maxevents != -1LL && nentries > maxevents)
    	nentriesToCheck = maxevents;
@@ -65,47 +67,47 @@ void post_analyzer::Loop(Long64_t maxevents, int reportEvery, const char* save_n
       		}
 
 
-		fixWeighting();		
+        //FIXME: need a way to declare all the histograms. It might just have to be a huge block, but something slicker (in a different file) would be better
 
 
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (doesnt pass met filter) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (doesnt pass trigger) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (no lepton_1) continue;
                 applySF(lepton_1);
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (no lepton_2) continue;
 		applySF(lepton_2);
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (found third lepton) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
-		if (charge isnt opposite) continuel
-		fillEvent(events, weight);
+        if (charge isnt opposite) continue;
+		fillEvent(events);
 
 		makeHigherVariables(pt, eta, etc);
 
 		if (dr<0.3) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (found bjet) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (visible pt cut) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (met cut) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
 		if (invariant mass cut) continue;
-		fillEvent(events, weight);
+		fillEvent(events);
 
 	}
 
