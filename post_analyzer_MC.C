@@ -19,16 +19,16 @@
 #include "myHelper.h"
 #include "selections.h"
 #include "scale_factors.h"
+#include "higher_vars.h"
 
 
 // TODO:
-// create var_1 and var_2 for the appropriate variables, in order to make things slicker with the higher order variables.
 // Pass the appropriate variables to the selection functions
 // Update the selection functions so that they, you know, do something
-// Write a function that uses "helper.h" to create all the variables in a single line
 // Find a way to include the final state as a string into the call for everything, so the program is final-state flexible
 // Figure out how/where to store the declarations of the histograms, and fill them in a nice way. Ask Jithin for help.
 // Comment everything so people understand what the hell is going on.
+// Bring everything in the MC analyzer into the data analyzer, with the necesary changes
 
 
 
@@ -47,7 +47,6 @@ int main(int argc, const char* argv[]){
 	t.Loop(maxevents,reportEvery, argv[2]);
 	return 0;
 }
-
 
 
 
@@ -79,12 +78,41 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
       		}
 
 
+        // Create variables for easier use later, using a lepton number instead of name. More flexible
+        vector<float> pt_1;
+        vector<float> pt_2 = tauPt;
+        vector<float> eta_1;
+        vector<float> eta_2 = tauEta;
+        vector<float> phi_1;
+        vector<float> phi_2 = tauPhi;
+        vector<float> charge_1;
+        vector<float> charge_2 = tauCharge;
+        vector<float> energy_1;
+        vector<float> energy_2 = tauEnergy;
+        if (final_state=="mutau"){
+            pt_1 = muPt;
+            eta_1 = muEta;
+            phi_1 = muPhi;
+            charge_1 = muCharge;
+            energy_1 = muEn;
+        }
+        if (final_state=="etau"){
+            pt_1 = elePt;
+            eta_1 = eleEta;
+            phi_1 = elePhi;
+            charge_1 = eleCharge;
+            energy_1 = eleEn;
+        }
+        
+
+        // housekeeping, making sure that we use the inclusive W+jets sample correctly.
         if ((string(save_name)).rfind("WJets2J",0)==0){
             if (genHT>200){
                 continue;
             }
         }
         
+        // Making sure that no events have negative weights
         double weight=1.0;
         genWeight > 0.0 ? event_weight *= genWeight/fabs(genWeight) : event_weight = 0.0;
 
@@ -96,12 +124,13 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 		fillEvent(events, weight);
 
         
+        
+        
         // trigger selection
-        if (!(HLTEleMuX>>trig_num&1==1)) continue;
-        // FIXME: define the variable "trig_num" based on the final state that is being used
+        // function "trig_num" is in the selections header, indicates which trigger is to be used
+        if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
 		fillEvent(events, weight);
 
-        // FIXME: define the variable "final_state", to be passed from the command line, ideally
         if (final_state=="mutau"){
             lept_num_1 = isMuon(variables);
         }
@@ -140,15 +169,16 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 		fillEvent(events, weight);
 
         // charge requirement selection
-        // FIXME: define charge_1 and charge_2
-        if (!(charge_1+charge_2==0)) continue;
+        if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
 		fillEvent(events, weight);
 
-		makeHigherVariables(pt, eta, etc);
+        
+        // this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
+        variables_t higher_vars = makeHigherVariables(pt_1->at(lept_num_1), pt_2->at(lept_num_2), eta_1->at(lept_num_1), eta_2->at(lept_num_2), phi_1->at(lept_num_1), phi_2->at(lept_num_2), charge_1->at(lept_num_1), charge_2->at(lept_num_2), energy_1->at(lept_num_1), energy_2->at(lept_num_2), pfMET, pfMETPhi);
 
         
         // dR selection
-		if (dr<0.3) continue;
+		if (higher_vars.dr<0.3) continue;
 		fillEvent(events, weight);
 
         // bjet selection
@@ -156,13 +186,13 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 		fillEvent(events, weight);
 
 /*
-		if (visible pt cut) continue;
+		if (higher_vars.vis_pt  ) continue;
 		fillEvent(events, weight);
 
-		if (met cut) continue;
+		if (pfMET  ) continue;
 		fillEvent(events, weight);
 
-		if (invariant mass cut) continue;
+		if (higher_vars.inv_mass  ) continue;
 		fillEvent(events, weight);
 */
  

@@ -18,10 +18,15 @@
 #include <TLorentzVector.h>
 
 
-bool trigger(string final_state){
+bool trig_num(string final_state){
+    int number;
     if (final_state="mutau"){
-        
+        number=19;
     }
+    if (final_state=="etau"){
+        number=3;
+    }
+    return number;
 }
 
 
