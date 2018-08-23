@@ -207,6 +207,120 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 }
 		
 
+void post_analyzer_MC::BookHistos(const char* file2)
+{
+	fileName = new TFile(file2, "RECREATE");
+	//tree = new TTree("ADD","ADD");
+	//tree->Branch("event_","std::vector<unsigned int>",&event_);
+	//tree->Branch("event_info","std::vector<double>",&event_info);
+	fileName->cd();
+	
+	Float_t PtBins[13]={0.0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200.,300., 400.};
+	Float_t MetBins[15]={0.0, 20, 40, 60, 80, 100, 120, 140, 160,180., 200, 300., 400., 600.0,800.0};
+	
+
+	//Set up the histos to be filled with method fillHistos
+	for(int i=0; i<10; i++)
+	{
+		char ptbins[100];
+		sprintf(ptbins, "_%d", i);
+		std::string histname(ptbins);
+		h_nVtx[i] = new TH1F(("nVtx"+histname).c_str(), "nVtx",40,0,40);h_nVtx[i]->Sumw2();
+		h_nEvents[i] = new TH1F(("nEvents"+histname).c_str(), "nEvents",3,0,3);h_nEvents[i]->Sumw2();
+                h_genWeight[i] = new TH1F(("genWeight"+histname).c_str(), "genWeight",10, -10.0, 10.0);h_genWeight[i]->Sumw2();
+                h_genHT[i] = new TH1F(("genHT"+histname).c_str(), "genHT",12,PtBins);h_genHT[i]->Sumw2();
+		//**************  electrons  **************
+		h_electron_En[i] = new TH1F(("Electron_En"+histname).c_str(), "Electron_En",12,PtBins);h_electron_En[i]->Sumw2();
+		h_electron_Pt[i] = new TH1F(("Electron_Pt"+histname).c_str(), "Electron_Pt",12,PtBins);h_electron_Pt[i]->Sumw2();
+		h_electron_eta[i] = new TH1F(("Electron_eta"+histname).c_str(), "Electron_eta",20,-3.0, 3.0);h_electron_eta[i]->Sumw2();
+		h_electron_SCEta[i] = new TH1F(("Electron_SCeta"+histname).c_str(), "Electron_SCeta",20, -3.0, 3.0);h_electron_SCEta[i]->Sumw2();
+		h_electron_phi[i] = new TH1F(("Electron_phi"+histname).c_str(), "Electron_phi", 21,-3.14,3.14);h_electron_phi[i]->Sumw2();
+		h_electron_SCPhi[i] = new TH1F(("electron_SCphi"+histname).c_str(), "electron_SCphi", 21,-3.14,3.14);h_electron_SCPhi[i]->Sumw2();
+		h_electron_IDbit[i] = new TH1F(("electron_ID_bit"+histname).c_str(), "electron_ID_bit",8,0,8);h_electron_IDbit[i]->Sumw2();
+		//**************  tau  **************
+		h_tau_En[i] = new TH1F(("Tau_En"+histname).c_str(), "Tau_En",12,PtBins);h_tau_En[i]->Sumw2();
+		h_tau_Pt[i] = new TH1F(("Tau_Pt"+histname).c_str(), "Tau_Pt",12,PtBins);h_tau_Pt[i]->Sumw2();
+		h_tau_eta[i] = new TH1F(("Tau_eta"+histname).c_str(), "Tau_eta",20,-3.0, 3.0);h_tau_eta[i]->Sumw2();
+
+		h_tau_phi[i] = new TH1F(("Tau_phi"+histname).c_str(), "Tau_phi", 21,-3.14,3.14);h_tau_phi[i]->Sumw2();
+		//**************  Met  **************
+		h_pfMET[i] = new TH1F(("pfMET"+histname).c_str(), "pfMET",14,MetBins);h_pfMET[i]->Sumw2();
+
+		h_dPhi[i] = new TH1F(("h_dPhi"+histname).c_str(),"h_dPhi",20,0,3.15);h_dPhi[i]->Sumw2();
+                h_dR[i] = new TH1F(("h_dR"+histname).c_str(),"h_dR",20,0,3.14);h_dR[i]->Sumw2();
+
+		h_nJet[i] = new TH1F(("nJet"+histname).c_str(), "nJet",20,0,20);h_nJet[i]->Sumw2();
+		h_leadingJetPt[i] = new TH1F(("leadingJetPt"+histname).c_str(),"leadingJetPt",30,20,1000);h_leadingJetPt[i]->Sumw2();
+
+		h_leadingJetEta[i] = new TH1F(("h_leadingJetEta"+histname).c_str(),"h_leadingJetEta",40,-1.4442,1.4442);h_leadingJetEta[i]->Sumw2();
+
+		//**************  rest  **************
+
+		h_Mt[i]= new TH1F(("Mt"+histname).c_str(),"MT",40,0,1000);h_Mt[i]->Sumw2();
+		h_VisibleMass[i]= new TH1F(("VisibleMass"+histname).c_str(),"VisibleMass",40,0,200);h_VisibleMass[i]->Sumw2();
+		h_HiggsPt[i]= new TH1F(("HiggsPt"+histname).c_str(),"HiggsPt",12,PtBins);h_HiggsPt[i]->Sumw2();
+                h_electronIso[i]= new TH1F(("Electron iso"+histname).c_str(),"Electron iso",40,0.0,1.0);h_electronIso[i]->Sumw2();
+                h_tauIso[i]= new TH1F(("Tau iso"+histname).c_str(),"Tau iso",10,-2.0,2.0);h_tauIso[i]->Sumw2();	       
+
+	}
+}
+
+//Fill the sequential histos at a particular spot in the sequence
+void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1_index, int lep_2_index)
+{
+	//*********** fill lep_1s  ***********
+		h_lep_1_En[histoNumber]->Fill((eleEn->at(lep_1_index)),event_weight);
+		h_lep_1_Pt[histoNumber]->Fill((elePt->at(lep_1_index)),event_weight);		
+		h_lep_1_eta[histoNumber]->Fill(eleEta->at(lep_1_index),event_weight);
+		h_lep_1_SCEta[histoNumber]->Fill(eleSCEta->at(lep_1_index),event_weight);
+		h_lep_1_phi[histoNumber]->Fill(elePhi->at(lep_1_index),event_weight);
+		h_lep_1_SCPhi[histoNumber]->Fill(eleSCPhi->at(lep_1_index),event_weight);
+                h_lep_1_IDbit[histoNumber]->Fill( eleIDbit->at(lep_1_index)>>3&1,event_weight);
+	
+	//*********** fill lep_2s  ***********
+
+		h_lep_2_En[histoNumber]->Fill((lep_2Energy->at(lep_2_index)),event_weight);
+		h_lep_2_Pt[histoNumber]->Fill((lep_2Pt->at(lep_2_index)),event_weight);
+		h_lep_2_eta[histoNumber]->Fill(lep_2Eta->at(lep_2_index),event_weight);
+		h_lep_2_phi[histoNumber]->Fill(lep_2Phi->at(lep_2_index),event_weight);
+		
+	//*********** fill met  ***********		
+		h_pfMET[histoNumber]->Fill(pfMET,event_weight);
+		double dPhi_elep_2 = DeltaPhi(elePhi->at(lep_1_index),lep_2Phi->at(lep_2_index));
+		h_dPhi[histoNumber]->Fill(dPhi_elep_2,event_weight);
+		double dR_elep_2 = dR(lep_1_index,lep_2_index);
+		h_dR[histoNumber]->Fill(dR_elep_2,event_weight);
+
+
+	//*********** fill rest  ***********
+
+		float mT_eMet = TMass_F((elePt->at(lep_1_index)),(elePhi->at(lep_1_index)),pfMET,pfMETPhi  );
+		h_Mt[histoNumber]->Fill(mT_eMet,event_weight);
+		TLorentzVector myLep_2; 
+		myLep_2.SetPtEtaPhiE(lep_2Pt->at(lep_2_index),lep_2Eta->at(lep_2_index),lep_2Phi->at(lep_2_index), lep_2Energy->at(lep_2_index));		
+		TLorentzVector myEle; 
+		myEle.SetPtEtaPhiE(elePt->at(lep_1_index),eleEta->at(lep_1_index),elePhi->at(lep_1_index), eleEn->at(lep_1_index));
+		double visMass_elep_2 = VisMass_F(myLep_2, myEle);
+		h_VisibleMass[histoNumber]->Fill(visMass_elep_2,event_weight);
+		double HiggsPt = pTvecsum_F(elePt->at(lep_1_index),lep_2Pt->at(lep_2_index),elePhi->at(lep_1_index),lep_2Phi->at(lep_2_index) );
+		h_HiggsPt[histoNumber]->Fill(HiggsPt,event_weight);
+		h_nVtx[histoNumber]->Fill(nVtx,event_weight);
+		h_nEvents[histoNumber]->Fill(isData,event_weight);
+		
+		h_nJet[histoNumber]->Fill(nJet ,event_weight);
+		//		if(jetsize>0){
+		//h_leadingJetPt[histoNumber]->Fill(jetPt->at(),event_weight);
+		//h_leadingJetPt_300[histoNumber]->Fill(jetPt->at(),event_weight);
+		//h_leadingJetEta[histoNumber]->Fill(jetEta->at(),event_weight);
+		//}
+		//h_genHT[histoNumber]->Fill(genHT);
+		//h_genWeight[histoNumber]->Fill(genWeight);
+		float rel_Iso = ( elePFChIso->at(lep_1_index) + max( elePFNeuIso->at(lep_1_index) + elePFPhoIso->at(lep_1_index) - 0.5 *elePFPUIso->at(lep_1_index) , 0.0 )) / (elePt->at(lep_1_index));
+                h_lep_1_Iso[histoNumber]->Fill(rel_Iso,event_weight);
+                h_lep_2_Iso[histoNumber]->Fill(lep_2byTightIsolationMVArun2017v2DBoldDMwLT2017->at(lep_2_index),event_weight);
+
+}
+
 	
 
 
