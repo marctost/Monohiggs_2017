@@ -30,70 +30,103 @@ bool trig_num(string final_state){
 }
 
 
-int isMuon(){
+int isMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<unsigned short>* muIDbit, vector<float>* muDz, vector<float>* muD0, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
+    int number = -1;
+    int extra = 0;
+    for (int counter=0; counter<num; counter++){
+        float thisiszero=0;
+        float muPhoPU = muPFNeuIso->at(counter) + muPFPhoIso->at(counter) - 0.5*muPFPUIso->at(counter);
+        float mu_iso_tight = (muPFChIso->at(counter) + TMath::Max(thisiszero,muPhoPU))/(muPt->at(counter));
+        
+        // Selections are here
+        if ((muonPt->at(counter)>10) && (fabs(muonEta->at(counter))<2.4) && (muIDbit->at(counter)>>0&1==1) && (muDz->at(counter)<0.2) && (muD0->at(counter)<0.045) && mu_iso_tight<0.3){
+            number = counter;
+            extra++;
+        }
+    }
+    if (extra>1){
+        // Skip any events where there are multiple accepted muons
+        number = -1;
+    }
+    return number;
+}
+
+
+
+int isElectron(Int_t num, vector<float>* elePt, vector<float>* eleEta, vector<unsigned short>* eleIDbit, vector<float>* elePFNeuIso, vector<float>* elePFPhoIso, vector<float>*elePFPUIso, vector<float>* elePFChIso){
+    int number = -1;
+    int extra = 0;
+    for (int counter=0; counter<num; counter++){
+        float thisiszero=0;
+        float elePhoPU = elePFNeuIso->at(counter) + elePFPhoIso->at(counter) - 0.5*elePFPUIso->at(counter);
+        float ele_iso_tight = (elePFChIso->at(counter) + TMath::Max(thisiszero,elePhoPU))/(elePt->at(counter));
+        
+        if ( elePt->at(counter)>40 && fabs(eleEta->at(counter))<2.1 && eleIDbit->at(counter)>>3&1==1 && ele_iso_tight<0.1){
+            number = counter;
+        }
+    }
+    if (extra>1){
+        number = -1;
+    }
+    return number;
+}
+
+
+
+int isTau(Int_t num, vector<float>* tauPt, vector<float>* tauEta, vector<int>* tauDecayMode, vector<float>* tauDz, vector<bool>* tauByMVA6TightElectronRejection, vector<bool>* tauByLooseMuonRejection3, vector<bool>* tauByTightIsolationMVArun2v1DBoldDMwLT){
     int number = -1;
     for (int counter=0; counter<num; counter++){
-        if (selections){
+        if ((tauPt->at(counter)>20 && (fabs(tauEta->at(counter))<2.3) && (tauDecayMode->at(counter)==1 or tauDecayMode->at(counter)==3) && eleveto->at(counter)==1 && veto2->at(counter)==1 && tauByTightIsolationMVArun2v1DBoldDMwLT->at(counter)==1 && tauDz->at(counter)<0.2) ){
             number = counter;
         }
     }
     return number;
 }
 
-int isElectron(){
-    int number = -1;
-    for (int counter=0; counter<num; counter++){
-        if (selections){
-            number = counter;
-        }
-    }
-    return number;
-}
 
-int isTau(){
-    int number = -1;
-    for (int counter=0; counter<num; counter++){
-        if (selections){
-            number = counter;
-        }
-    }
-    return number;
-}
 
-bool rejectMuon(){
+
+bool rejectMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<float>* muD0, vector<float>* muDz, vector<unsigned short>* muIDbit, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
     bool reject=false;
     for (int counter=0; counter<num; counter++){
-        if (veto_selections){
+        float thisiszero=0;
+        float muPhoPU = muPFNeuIso->at(counter) + muPFPhoIso->at(counter) - 0.5*muPFPUIso->at(counter);
+        float mu_iso = (muPFChIso->at(counter) + TMath::Max(thisiszero,muPhoPU))/(muPt->at(counter));
+        
+        if (muPt->at(counter)>10 && fabs(muEta->at(counter))<2.4 && muD0->at(counter)<0.045 && muDz->at(counter)<0.2 && muIDbit->at(counter)>>0&1==1 && mu_iso<0.3 ){
             reject=true;
         }
     }
     return reject;
 }
 
-bool rejectElectron(){
+
+
+bool rejectElectron(Int_t num, vector<float>* elePt, vector<float>* eleEta, vector<float>* eleD0, vector<float>* eleDz, vector<unsigned short>* eleIDbit, vector<float>* elePFNeuIso, vector<float>* elePFPhoIso, vector<float>*elePFPUIso, vector<float>* elePFChIso){
     bool reject=false;
     for (int counter=0; counter<num; counter++){
-        if (veto_selections){
+        float thisiszero=0;
+        float elePhoPU = elePFNeuIso->at(counter) + elePFPhoIso->at(counter) - 0.5*elePFPUIso->at(counter);
+        float ele_iso = (elePFChIso->at(counter) + TMath::Max(thisiszero,elePhoPU))/(elePt->at(counter));
+        
+        
+        if (elePt->at(counter)>10 && fabs(eleEta->at(counter))<2.5 && eleD0->at(counter)<0.045 && eleDz->at(counter)<0.2 && eleIDbit->at(iEle)>>0&1==1 && ele_iso<0.3 ){
             reject=true;
         }
     }
     return reject;
 }
 
-bool BjetVeto(){
-    int number = -1;
+bool BjetVeto(Int_t num, vector<float>* jetBtag){
+
     bool reject=false;
     for (int counter=0; counter<num; counter++){
-        if (selections){
-            number = counter;
+        if (jetBtag>0.8838){
+            // Going to accept the -1 values right now, since we don't know what to do about them.
+            reject = true;
         }
     }
-    if (number>=0){
-        reject = true;
-    }
-    else{
-        reject = false;
-    }
+
     return reject;
 }
 

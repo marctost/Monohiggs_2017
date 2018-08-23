@@ -104,10 +104,10 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, const char* s
         fillEvent(events);
         
         if (final_state=="mutau"){
-            lept_num_1 = isMuon(variables);
+            lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
         }
         else if (final_state=="etau"){
-            lept_num_1 = isElectron(variables);
+            lept_num_1 = isElectron(nEle, elePt, eleEta, eteIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
         }
         else if (final_state=="tautau"){
             //lept_num_1 = isFirstTau(variables);
@@ -119,7 +119,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, const char* s
         fillEvent(events);
         
         if (final_state=="mutau" or final_state=="etau"){
-            lept_num_2 = isTau(variables);
+            lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, tauDz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
         }
         else if (final_state=="tautau"){
             //lept_num_2 = isSecondTau(variables);
@@ -130,8 +130,11 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, const char* s
         fillEvent(events);
         
         // extra lepton rejection
-        if (final_state=="mutau" && rejectElectron==true) continue;
-        else if (final_state=="etau" && rejectMuon==true) continue;
+        bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
+        bool rejectMu = rejectMuon(nMu, muPt, muEta, muD0, muDz, muIDbit, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
+        
+        if (final_state=="mutau" && rejectEle==true) continue;
+        else if (final_state=="etau" && rejectMu==true) continue;
         else if (final_state=="tautau" && (rejectElectron==true || rejectMuon==true)) continue;
         fillEvent(events);
         
@@ -149,7 +152,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, const char* s
         fillEvent(events);
         
         // bjet selection
-        if (BjetVeto(variables)==true) continue;
+        if (BjetVeto(nJet, jetBtag)==true) continue;
         fillEvent(events);
         
         /*
