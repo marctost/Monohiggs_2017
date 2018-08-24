@@ -912,20 +912,20 @@ post_analyzer_MC::post_analyzer_MC(const char* file1, const char* file2)
   int fileNumber = 0;
   int maxFiles = -1;
   while ((filename = (TSystemFile*)next()) && fileNumber >  maxFiles)
+  {
+    if(fileNumber > 1)
     {
-      //      if(fileNumber > 1)
-      {
-	TString dataset = "ggtree_";
-	TString  FullPathInputFile = (path+filename->GetName());
-	TString name = filename->GetName();
-	if(name.Contains(dataset))
-	  {
+        TString dataset = "ggtree_";
+        TString  FullPathInputFile = (path+filename->GetName());
+        TString name = filename->GetName();
+        if(name.Contains(dataset))
+        {
 	    //std::cout<<"FullPathInputFile:"<<FullPathInputFile<<std::endl;
-	    chain->Add(FullPathInputFile);
-	  }
+            chain->Add(FullPathInputFile);
+        }
       }
       fileNumber++;
-    }
+   }
   std::cout<<"All files added."<<std::endl;
   std::cout<<"Initializing chain."<<std::endl;
   Init(chain);

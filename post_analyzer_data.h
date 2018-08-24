@@ -53,6 +53,27 @@ class post_analyzer_data {
     
     // Fixed size dimensions of array or collections stored in the TTree if any.
     
+    
+    
+    TH1F *h_lep_1_En[25], *h_lep_1_Pt[25], *h_lep_1_eta[25], *h_lep_1_SCEta[25], *h_lep_1_phi[25],  *h_lep_1_SCPhi[25],  *h_lep_1_IDbit[25];
+    
+    TH1F *h_lep_2_En[25],*h_lep_2_Pt[25], *h_lep_2_eta[25], *h_lep_2_phi[25];
+    
+    TH1F *h_pfMET[25], *h_dPhi[25], *h_dR[25];
+    TH1F *h_pfMET_300[25];
+    TH1F *h_nJet[25];
+    TH1F *h_leadingJetPt[25];
+    TH1F *h_leadingJetEta[25];
+    TH1F *h_Mt[25], *h_VisibleMass[25], *h_HiggsPt[25];
+    TH1F *h_nVtx[25];
+    TH1F *h_nEvents[25];
+    TH1F *h_genHT[25];
+    TH1F *h_genWeight[25];
+    TH1F *h_tauIso[25];
+    TH1F *h_lep_1_Iso[25];
+    
+    
+    
     // Declaration of leaf types
     //   Float_t         genHT;
     //   Float_t        genWeight;
@@ -801,7 +822,7 @@ class post_analyzer_data {
 #endif
 
 #ifdef post_analyzer_data_cxx
-post_analyzer_data::post_analyzer_data(const char* file1)
+post_analyzer_data::post_analyzer_data(const char* file1, const char* file2)
 {
     TChain *chain = new TChain("ggNtuplizer/EventTree");
     //Run over all files in file1, presumably /hdfs/store/user/<etc>/ (must end with a /)
@@ -835,6 +856,7 @@ post_analyzer_data::post_analyzer_data(const char* file1)
     std::cout<<"All files added."<<std::endl;
     std::cout<<"Initializing chain."<<std::endl;
     Init(chain);
+    BookHistos(file2)
     
     
 }

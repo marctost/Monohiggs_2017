@@ -23,12 +23,9 @@
 
 
 // TODO:
-// Pass the appropriate variables to the selection functions
-// Update the selection functions so that they, you know, do something
 // Find a way to include the final state as a string into the call for everything, so the program is final-state flexible
 // Figure out how/where to store the declarations of the histograms, and fill them in a nice way. Ask Jithin for help.
 // Comment everything so people understand what the hell is going on.
-// Bring everything in the MC analyzer into the data analyzer, with the necesary changes
 
 
 
@@ -44,13 +41,13 @@ int main(int argc, const char* argv[]){
     		return 1;
   	}
 	post_analyzer_MC t(argv[1]);
-	t.Loop(maxevents,reportEvery, argv[2]);
+	t.Loop(maxevents,reportEvery, argv[2], argv[6]);
 	return 0;
 }
 
 
 
-void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* save_name){
+void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* save_name, const char* final_state){
 	if (fChain==0) return;
 
 	Long64_t nentries = fChain->GetEntriesFast();
@@ -117,11 +114,11 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         genWeight > 0.0 ? event_weight *= genWeight/fabs(genWeight) : event_weight = 0.0;
 
 
-		fillEvent(events, weight);
+		fillEvent(1,weight,lept_num_1, lept_num_2);
 
         // met filter selection
 		if (!(metFilters==0)) continue;
-		fillEvent(events, weight);
+		fillEvent(2,weight,lept_num_1, lept_num_2);
 
         
         
@@ -129,7 +126,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         // trigger selection
         // function "trig_num" is in the selections header, indicates which trigger is to be used
         if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
-		fillEvent(events, weight);
+		fillEvent(3,weight,lept_num_1, lept_num_2);
 
         if (final_state=="mutau"){
             lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
@@ -144,7 +141,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
         // first lepton selection
         if (lept_num_1<0) continue;
-		fillEvent(events, weight);
+		fillEvent(4,weight,lept_num_1, lept_num_2);
 
         
         if (final_state=="mutau"){
@@ -160,7 +157,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
         // second lepton selection
 		if (lept_num_2<0) continue;
-		fillEvent(events, weight);
+		fillEvent(5,weight,lept_num_1, lept_num_2);
 
         // extra lepton rejection
         bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
@@ -169,11 +166,11 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         if (final_state=="mutau" && rejectEle==true) continue;
         else if (final_state=="etau" && rejectMu==true) continue;
         else if (final_state=="tautau" && (rejectElectron==true || rejectMuon==true)) continue;
-		fillEvent(events, weight);
+		fillEvent(6,weight,lept_num_1, lept_num_2);
 
         // charge requirement selection
         if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
-		fillEvent(events, weight);
+		fillEvent(7,weight,lept_num_1, lept_num_2);
 
         
         // this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
@@ -182,28 +179,24 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
         // dR selection
 		if (higher_vars.dr<0.3) continue;
-		fillEvent(events, weight);
+		fillEvent(8,weight,lept_num_1, lept_num_2);
 
         // bjet selection
 		if (BjetVeto(nJet, jetBtag)==true) continue;
-		fillEvent(events, weight);
+		fillEvent(9,weight,lept_num_1, lept_num_2);
 
 /*
 		if (higher_vars.vis_pt  ) continue;
-		fillEvent(events, weight);
+		fillEvent(10,weight,lept_num_1, lept_num_2);
 
 		if (pfMET  ) continue;
-		fillEvent(events, weight);
+		fillEvent(11,weight,lept_num_1, lept_num_2);
 
 		if (higher_vars.inv_mass  ) continue;
-		fillEvent(events, weight);
+		fillEvent(12,weight,lept_num_1, lept_num_2);
 */
  
 	}
-
-
-	writeHistos(filename);
-
 }
 		
 
@@ -322,17 +315,6 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
 }
 
 	
-
-
-
-
-
-
-
-
-
-
-
 
 
 
