@@ -16,9 +16,13 @@
 #include "TMath.h"
 #include "TRandom3.h"
 #include <TLorentzVector.h>
+#include <vector>
+#include "vector"
+
+using namespace std;
 
 
-bool trig_num(string final_state){
+bool trig_num(const char* final_state){
     int number;
     if (final_state="mutau"){
         number=19;
@@ -39,7 +43,7 @@ int isMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<unsigned
         float mu_iso_tight = (muPFChIso->at(counter) + TMath::Max(thisiszero,muPhoPU))/(muPt->at(counter));
         
         // Selections are here
-        if ((muonPt->at(counter)>10) && (fabs(muonEta->at(counter))<2.4) && (muIDbit->at(counter)>>0&1==1) && (muDz->at(counter)<0.2) && (muD0->at(counter)<0.045) && mu_iso_tight<0.3){
+        if ((muPt->at(counter)>10) && (fabs(muEta->at(counter))<2.4) && (muIDbit->at(counter)>>0&1==1) && (muDz->at(counter)<0.2) && (muD0->at(counter)<0.045) && mu_iso_tight<0.3){
             number = counter;
             extra++;
         }
@@ -76,7 +80,7 @@ int isElectron(Int_t num, vector<float>* elePt, vector<float>* eleEta, vector<un
 int isTau(Int_t num, vector<float>* tauPt, vector<float>* tauEta, vector<int>* tauDecayMode, vector<float>* tauDz, vector<bool>* tauByMVA6TightElectronRejection, vector<bool>* tauByLooseMuonRejection3, vector<bool>* tauByTightIsolationMVArun2v1DBoldDMwLT){
     int number = -1;
     for (int counter=0; counter<num; counter++){
-        if ((tauPt->at(counter)>20 && (fabs(tauEta->at(counter))<2.3) && (tauDecayMode->at(counter)==1 or tauDecayMode->at(counter)==3) && eleveto->at(counter)==1 && veto2->at(counter)==1 && tauByTightIsolationMVArun2v1DBoldDMwLT->at(counter)==1 && tauDz->at(counter)<0.2) ){
+        if ((tauPt->at(counter)>20 && (fabs(tauEta->at(counter))<2.3) && (tauDecayMode->at(counter)==1 or tauDecayMode->at(counter)==3) && tauByMVA6TightElectronRejection->at(counter)==1 && tauByLooseMuonRejection3->at(counter)==1 && tauByTightIsolationMVArun2v1DBoldDMwLT->at(counter)==1 && tauDz->at(counter)<0.2) ){
             number = counter;
         }
     }
@@ -110,7 +114,7 @@ bool rejectElectron(Int_t num, vector<float>* elePt, vector<float>* eleEta, vect
         float ele_iso = (elePFChIso->at(counter) + TMath::Max(thisiszero,elePhoPU))/(elePt->at(counter));
         
         
-        if (elePt->at(counter)>10 && fabs(eleEta->at(counter))<2.5 && eleD0->at(counter)<0.045 && eleDz->at(counter)<0.2 && eleIDbit->at(iEle)>>0&1==1 && ele_iso<0.3 ){
+        if (elePt->at(counter)>10 && fabs(eleEta->at(counter))<2.5 && eleD0->at(counter)<0.045 && eleDz->at(counter)<0.2 && eleIDbit->at(counter)>>0&1==1 && ele_iso<0.3 ){
             reject=true;
         }
     }
@@ -121,7 +125,7 @@ bool BjetVeto(Int_t num, vector<float>* jetBtag){
 
     bool reject=false;
     for (int counter=0; counter<num; counter++){
-        if (jetBtag>0.8838){
+        if (jetBtag->at(counter)>0.8838){
             // Going to accept the -1 values right now, since we don't know what to do about them.
             reject = true;
         }
