@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Fri Aug 17 08:53:08 2018 by ROOT version 6.10/09
-// from TTree EventTree/Event data (tag V08_00_26_03)
-// found on file: /hdfs/store/user/jmadhusu/MonoHiggs_MC2017/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50/180718_124235/0000/ggtree_mc_101.root
+// Thu Aug 30 04:26:17 2018 by ROOT version 6.10/09
+// from TTree EventTree/Event data (tag V09_04_09_00)
+// found on file: /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180823_134110/0000/ggtree_mc_10.root
 //////////////////////////////////////////////////////////
 
-#ifndef post_analyzer_MC_h
-#define post_analyzer_MC_h
+#ifndef test_MC_h
+#define test_MC_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -22,32 +22,14 @@
 #include "vector"
 #include "vector"
 
-class post_analyzer_MC {
-    public :
-    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
-    Int_t           fCurrent; //!current Tree number in a TChain
-    
-    // Fixed size dimensions of array or collections stored in the TTree if any.
+class test_MC {
+public :
+   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+   Int_t           fCurrent; //!current Tree number in a TChain
 
+// Fixed size dimensions of array or collections stored in the TTree if any.
 
-    TH1F *h_lep_1_En[25], *h_lep_1_Pt[25], *h_lep_1_eta[25], *h_lep_1_SCEta[25], *h_lep_1_phi[25],  *h_lep_1_SCPhi[25],  *h_lep_1_IDbit[25];
-
-    TH1F *h_lep_2_En[25],*h_lep_2_Pt[25], *h_lep_2_eta[25], *h_lep_2_phi[25];
-
-    TH1F *h_pfMET[25], *h_dPhi[25], *h_dR[25];
-    TH1F *h_pfMET_300[25];
-    TH1F *h_nJet[25];
-    TH1F *h_leadingJetPt[25];
-    TH1F *h_leadingJetEta[25];
-    TH1F *h_Mt[25], *h_VisibleMass[25], *h_HiggsPt[25];
-    TH1F *h_nVtx[25];
-    TH1F *h_nEvents[25];
-    TH1F *h_genHT[25];
-    TH1F *h_genWeight[25];
-    TH1F *h_tauIso[25];
-    TH1F *h_lep_1_Iso[25];
-    
-    // Declaration of leaf types
+   // Declaration of leaf types
    Int_t           run;
    Long64_t        event;
    Int_t           lumis;
@@ -792,99 +774,73 @@ class post_analyzer_MC {
    TBranch        *b_jetVtxNtrks;   //!
    TBranch        *b_jetVtx3DVal;   //!
    TBranch        *b_jetVtx3DSig;   //!
-    
-    post_analyzer_MC(TTree *tree=0);
-    virtual ~post_analyzer_MC();
-    virtual Int_t    Cut(Long64_t entry);
-    virtual Int_t    GetEntry(Long64_t entry);
-    virtual Long64_t LoadTree(Long64_t entry);
-    virtual void     Init(TTree *tree);
-    virtual void     Loop();
-    virtual void     BookHistos(const char* file2);
-    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index);
 
-    virtual Bool_t   Notify();
-    virtual void     Show(Long64_t entry = -1);
+   test_MC(TTree *tree=0);
+   virtual ~test_MC();
+   virtual Int_t    Cut(Long64_t entry);
+   virtual Int_t    GetEntry(Long64_t entry);
+   virtual Long64_t LoadTree(Long64_t entry);
+   virtual void     Init(TTree *tree);
+   virtual void     Loop();
+   virtual Bool_t   Notify();
+   virtual void     Show(Long64_t entry = -1);
 };
 
 #endif
 
-#ifdef post_analyzer_MC_cxx
-
-post_analyzer_MC::post_analyzer_MC(const char* file1, const char* file2)
+#ifdef test_MC_cxx
+test_MC::test_MC(TTree *tree) : fChain(0) 
 {
-  TChain *chain = new TChain("ggNtuplizer/EventTree");
-  //Run over all files in file1, presumably /hdfs/store/user/<etc>/ (must end with a /)                                                                     \
-
-  TString path = file1;
-  TSystemDirectory sourceDir("hi",path);
-  TList* fileList = sourceDir.GetListOfFiles();
-  TIter next(fileList);
-  TSystemFile* filename;
-  int fileNumber = 0;
-  int maxFiles = -1;
-  while ((filename = (TSystemFile*)next()) && fileNumber >  maxFiles)
-  {
-    if(fileNumber > 1)
-    {
-        TString dataset = "ggtree_";
-        TString  FullPathInputFile = (path+filename->GetName());
-        TString name = filename->GetName();
-        if(name.Contains(dataset))
-        {
-	    //std::cout<<"FullPathInputFile:"<<FullPathInputFile<<std::endl;
-            chain->Add(FullPathInputFile);
-        }
+// if parameter tree is not specified (or zero), connect the file
+// used to generate this class and read the Tree.
+   if (tree == 0) {
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/hdfs/store/user/jmadhusu/MonoHiggs_MC_2017/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180823_134110/0000/ggtree_mc_10.root");
+      if (!f || !f->IsOpen()) {
+         f = new TFile("/hdfs/store/user/jmadhusu/MonoHiggs_MC_2017/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180823_134110/0000/ggtree_mc_10.root");
       }
-      fileNumber++;
+      TDirectory * dir = (TDirectory*)f->Get("/hdfs/store/user/jmadhusu/MonoHiggs_MC_2017/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180823_134110/0000/ggtree_mc_10.root:/ggNtuplizer");
+      dir->GetObject("EventTree",tree);
+
    }
-  std::cout<<"All files added."<<std::endl;
-  std::cout<<"Initializing chain."<<std::endl;
-  Init(chain);
-  BookHistos(file2);
+   Init(tree);
 }
 
-
-
-
-
-
-post_analyzer_MC::~post_analyzer_MC()
+test_MC::~test_MC()
 {
-    if (!fChain) return;
-    delete fChain->GetCurrentFile();
+   if (!fChain) return;
+   delete fChain->GetCurrentFile();
 }
 
-Int_t post_analyzer_MC::GetEntry(Long64_t entry)
+Int_t test_MC::GetEntry(Long64_t entry)
 {
-    // Read contents of entry.
-    if (!fChain) return 0;
-    return fChain->GetEntry(entry);
+// Read contents of entry.
+   if (!fChain) return 0;
+   return fChain->GetEntry(entry);
 }
-Long64_t post_analyzer_MC::LoadTree(Long64_t entry)
+Long64_t test_MC::LoadTree(Long64_t entry)
 {
-    // Set the environment to read one entry
-    if (!fChain) return -5;
-    Long64_t centry = fChain->LoadTree(entry);
-    if (centry < 0) return centry;
-    if (fChain->GetTreeNumber() != fCurrent) {
-        fCurrent = fChain->GetTreeNumber();
-        Notify();
-    }
-    return centry;
+// Set the environment to read one entry
+   if (!fChain) return -5;
+   Long64_t centry = fChain->LoadTree(entry);
+   if (centry < 0) return centry;
+   if (fChain->GetTreeNumber() != fCurrent) {
+      fCurrent = fChain->GetTreeNumber();
+      Notify();
+   }
+   return centry;
 }
 
-void post_analyzer_MC::Init(TTree *tree)
+void test_MC::Init(TTree *tree)
 {
-    // The Init() function is called when the selector needs to initialize
-    // a new tree or chain. Typically here the branch addresses and branch
-    // pointers of the tree will be set.
-    // It is normally not necessary to make changes to the generated
-    // code, but the routine can be extended by the user if needed.
-    // Init() will be called many times when running on PROOF
-    // (once per file to be processed).
-    
-    // Set object pointer
+   // The Init() function is called when the selector needs to initialize
+   // a new tree or chain. Typically here the branch addresses and branch
+   // pointers of the tree will be set.
+   // It is normally not necessary to make changes to the generated
+   // code, but the routine can be extended by the user if needed.
+   // Init() will be called many times when running on PROOF
+   // (once per file to be processed).
+
+   // Set object pointer
    pdf = 0;
    EventTag = 0;
    nPU = 0;
@@ -1585,34 +1541,32 @@ void post_analyzer_MC::Init(TTree *tree)
    fChain->SetBranchAddress("jetVtxNtrks", &jetVtxNtrks, &b_jetVtxNtrks);
    fChain->SetBranchAddress("jetVtx3DVal", &jetVtx3DVal, &b_jetVtx3DVal);
    fChain->SetBranchAddress("jetVtx3DSig", &jetVtx3DSig, &b_jetVtx3DSig);
-
-    Notify();
+   Notify();
 }
 
-Bool_t post_analyzer_MC::Notify()
+Bool_t test_MC::Notify()
 {
-    // The Notify() function is called when a new file is opened. This
-    // can be either for a new TTree in a TChain or when when a new TTree
-    // is started when using PROOF. It is normally not necessary to make changes
-    // to the generated code, but the routine can be extended by the
-    // user if needed. The return value is currently not used.
-    
-    return kTRUE;
+   // The Notify() function is called when a new file is opened. This
+   // can be either for a new TTree in a TChain or when when a new TTree
+   // is started when using PROOF. It is normally not necessary to make changes
+   // to the generated code, but the routine can be extended by the
+   // user if needed. The return value is currently not used.
+
+   return kTRUE;
 }
 
-void post_analyzer_MC::Show(Long64_t entry)
+void test_MC::Show(Long64_t entry)
 {
-    // Print contents of entry.
-    // If entry is not specified, print current entry
-    if (!fChain) return;
-    fChain->Show(entry);
+// Print contents of entry.
+// If entry is not specified, print current entry
+   if (!fChain) return;
+   fChain->Show(entry);
 }
-Int_t post_analyzer_MC::Cut(Long64_t entry)
+Int_t test_MC::Cut(Long64_t entry)
 {
-    // This function may be called from Loop.
-    // returns  1 if entry is accepted.
-    // returns -1 otherwise.
-    return 1;
+// This function may be called from Loop.
+// returns  1 if entry is accepted.
+// returns -1 otherwise.
+   return 1;
 }
-#endif // #ifdef post_analyzer_MC_cxx
-
+#endif // #ifdef test_MC_cxx

@@ -1,0 +1,9 @@
+
+
+./rootcom 
+
+
+./analyze_etau_data /hdfs/store/user/jmadhusu/Data_2017/monoHiggs_data_2017/SingleElectron/crab_sEle_dataset1/180825_160010/0000/ SingleElectron_10_test.root 100000 10000 SingleElectron_10
+./analyze_etau  /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180823_134110/0000/ DY1JetsToLL_test.root 100000 10000 DY1JetsToLL
+
+

@@ -223,13 +223,13 @@ void post_analyzer_MC::BookHistos(const char* file2)
                 h_genWeight[i] = new TH1F(("genWeight"+histname).c_str(), "genWeight",10, -10.0, 10.0);h_genWeight[i]->Sumw2();
                 h_genHT[i] = new TH1F(("genHT"+histname).c_str(), "genHT",12,PtBins);h_genHT[i]->Sumw2();
 		//**************  electrons  **************
-		h_electron_En[i] = new TH1F(("Electron_En"+histname).c_str(), "Electron_En",12,PtBins);h_electron_En[i]->Sumw2();
-		h_electron_Pt[i] = new TH1F(("Electron_Pt"+histname).c_str(), "Electron_Pt",12,PtBins);h_electron_Pt[i]->Sumw2();
-		h_electron_eta[i] = new TH1F(("Electron_eta"+histname).c_str(), "Electron_eta",20,-3.0, 3.0);h_electron_eta[i]->Sumw2();
-		h_electron_SCEta[i] = new TH1F(("Electron_SCeta"+histname).c_str(), "Electron_SCeta",20, -3.0, 3.0);h_electron_SCEta[i]->Sumw2();
-		h_electron_phi[i] = new TH1F(("Electron_phi"+histname).c_str(), "Electron_phi", 21,-3.14,3.14);h_electron_phi[i]->Sumw2();
-		h_electron_SCPhi[i] = new TH1F(("electron_SCphi"+histname).c_str(), "electron_SCphi", 21,-3.14,3.14);h_electron_SCPhi[i]->Sumw2();
-		h_electron_IDbit[i] = new TH1F(("electron_ID_bit"+histname).c_str(), "electron_ID_bit",8,0,8);h_electron_IDbit[i]->Sumw2();
+		h_lep_1_En[i] = new TH1F(("Lepton_1_En"+histname).c_str(), "Lepton_1_En",12,PtBins);h_lep_1_En[i]->Sumw2();
+		h_lep_1_Pt[i] = new TH1F(("Lepton_1_Pt"+histname).c_str(), "Lepton_1_Pt",12,PtBins);h_lep_1_Pt[i]->Sumw2();
+		h_lep_1_eta[i] = new TH1F(("Lepton_1_eta"+histname).c_str(), "Lepton_1_eta",20,-3.0, 3.0);h_lep_1_eta[i]->Sumw2();
+		h_lep_1_SCEta[i] = new TH1F(("Lepton_1_SCeta"+histname).c_str(), "Lepton_1_SCeta",20, -3.0, 3.0);h_lep_1_SCEta[i]->Sumw2();
+		h_lep_1_phi[i] = new TH1F(("Lepton_1_phi"+histname).c_str(), "Lepton_1_phi", 21,-3.14,3.14);h_lep_1_phi[i]->Sumw2();
+		h_lep_1_SCPhi[i] = new TH1F(("Lepton_1_SCphi"+histname).c_str(), "Lepton_1_SCphi", 21,-3.14,3.14);h_lep_1_SCPhi[i]->Sumw2();
+		h_lep_1_IDbit[i] = new TH1F(("Lepton_1_ID_bit"+histname).c_str(), "Lepton_1_ID_bit",8,0,8);h_lep_1_IDbit[i]->Sumw2();
 		//**************  tau  **************
 		h_tau_En[i] = new TH1F(("Tau_En"+histname).c_str(), "Tau_En",12,PtBins);h_tau_En[i]->Sumw2();
 		h_tau_Pt[i] = new TH1F(("Tau_Pt"+histname).c_str(), "Tau_Pt",12,PtBins);h_tau_Pt[i]->Sumw2();
@@ -252,7 +252,7 @@ void post_analyzer_MC::BookHistos(const char* file2)
 		h_Mt[i]= new TH1F(("Mt"+histname).c_str(),"MT",40,0,1000);h_Mt[i]->Sumw2();
 		h_VisibleMass[i]= new TH1F(("VisibleMass"+histname).c_str(),"VisibleMass",40,0,200);h_VisibleMass[i]->Sumw2();
 		h_HiggsPt[i]= new TH1F(("HiggsPt"+histname).c_str(),"HiggsPt",12,PtBins);h_HiggsPt[i]->Sumw2();
-                h_electronIso[i]= new TH1F(("Electron iso"+histname).c_str(),"Electron iso",40,0.0,1.0);h_electronIso[i]->Sumw2();
+                h_lep_1_Iso[i]= new TH1F(("Lepton_1 iso"+histname).c_str(),"Lepton_1 iso",40,0.0,1.0);h_lep_1_Iso[i]->Sumw2();
                 h_tauIso[i]= new TH1F(("Tau iso"+histname).c_str(),"Tau iso",10,-2.0,2.0);h_tauIso[i]->Sumw2();	       
 
 	}
