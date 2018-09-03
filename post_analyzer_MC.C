@@ -22,12 +22,6 @@
 #include "higher_vars.h"
 
 
-// TODO:
-// Find a way to include the final state as a string into the call for everything, so the program is final-state flexible
-// Figure out how/where to store the declarations of the histograms, and fill them in a nice way. Ask Jithin for help.
-// Comment everything so people understand what the hell is going on.
-
-
 
 int main(int argc, const char* argv[]){
 	Long64_t maxEvents = atof(argv[3]);
