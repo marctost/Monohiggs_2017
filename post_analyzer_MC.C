@@ -70,127 +70,127 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
       		}
 
 
-        // Create variables for easier use later, using a lepton number instead of name. More flexible
-        vector<float> pt_1;
-        vector<float> pt_2 = tauPt;
-        vector<float> eta_1;
-        vector<float> eta_2 = tauEta;
-        vector<float> phi_1;
-        vector<float> phi_2 = tauPhi;
-        vector<float> charge_1;
-        vector<float> charge_2 = tauCharge;
-        vector<float> energy_1;
-        vector<float> energy_2 = tauEnergy;
-        if (final_state=="mutau"){
-            pt_1 = muPt;
-            eta_1 = muEta;
-            phi_1 = muPhi;
-            charge_1 = muCharge;
-            energy_1 = muEn;
-        }
-        if (final_state=="etau"){
-            pt_1 = elePt;
-            eta_1 = eleEta;
-            phi_1 = elePhi;
-            charge_1 = eleCharge;
-            energy_1 = eleEn;
-        }
-        
-
-        // housekeeping, making sure that we use the inclusive W+jets sample correctly.
-        if ((string(save_name)).rfind("WJets2J",0)==0){
-            if (genHT>200){
-                continue;
+            // Create variables for easier use later, using a lepton number instead of name. More flexible
+            vector<float> pt_1;
+            vector<float> pt_2 = tauPt;
+            vector<float> eta_1;
+            vector<float> eta_2 = tauEta;
+            vector<float> phi_1;
+            vector<float> phi_2 = tauPhi;
+            vector<float> charge_1;
+            vector<float> charge_2 = tauCharge;
+            vector<float> energy_1;
+            vector<float> energy_2 = tauEnergy;
+            if (final_state=="mutau"){
+                pt_1 = muPt;
+                eta_1 = muEta;
+                phi_1 = muPhi;
+                charge_1 = muCharge;
+                energy_1 = muEn;
             }
-        }
+            if (final_state=="etau"){
+                pt_1 = elePt;
+                eta_1 = eleEta;
+                phi_1 = elePhi;
+                charge_1 = eleCharge;
+                energy_1 = eleEn;
+            }
         
-        // Making sure that no events have negative weights
-        double weight=1.0;
-        genWeight > 0.0 ? event_weight *= genWeight/fabs(genWeight) : event_weight = 0.0;
 
-
-		fillEvent(1,weight,lept_num_1, lept_num_2);
-
-        // met filter selection
-		if (!(metFilters==0)) continue;
-		fillEvent(2,weight,lept_num_1, lept_num_2);
-
+            // housekeeping, making sure that we use the inclusive W+jets sample correctly.
+            if ((string(save_name)).rfind("WJets2J",0)==0){
+                if (genHT>200){
+                    continue;
+                }
+            }
         
-        
-        
-        // trigger selection
-        // function "trig_num" is in the selections header, indicates which trigger is to be used
-        if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
-		fillEvent(3,weight,lept_num_1, lept_num_2);
+            // Making sure that no events have negative weights
+            double weight=1.0;
+            genWeight > 0.0 ? event_weight *= genWeight/fabs(genWeight) : event_weight = 0.0;
 
-        if (final_state=="mutau"){
-            lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
-        }
-        else if (final_state=="etau"){
-            lept_num_1 = isElectron(nEle, elePt, eleEta, eteIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
-        }
-        else if (final_state=="tautau"){
-            //lept_num_1 = isFirstTau(variables);
-        }
+
+            fillEvent(1,weight,lept_num_1, lept_num_2, final_state);
+
+            // met filter selection
+            if (!(metFilters==0)) continue;
+            fillEvent(2,weight,lept_num_1, lept_num_2, final_state);
+
         
         
-        // first lepton selection
-        if (lept_num_1<0) continue;
-	fillEvent(4,weight,lept_num_1, lept_num_2);
+        
+            // trigger selection
+            // function "trig_num" is in the selections header, indicates which trigger is to be used
+            if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
+            fillEvent(3,weight,lept_num_1, lept_num_2, final_state);
+
+            if (final_state=="mutau"){
+                lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
+            }
+            else if (final_state=="etau"){
+                lept_num_1 = isElectron(nEle, elePt, eleEta, eteIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
+            }
+            else if (final_state=="tautau"){
+                //lept_num_1 = isFirstTau(variables);
+            }
+        
+        
+            // first lepton selection
+            if (lept_num_1<0) continue;
+            fillEvent(4,weight,lept_num_1, lept_num_2, final_state);
 
         
-        if (final_state=="mutau"){
-            weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo)*trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo);
-        }
+            if (final_state=="mutau"){
+                weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo)*trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo);
+            }
         
-        if (final_state=="mutau" or final_state=="etau"){
-            lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, tauDz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
-        }
-        else if (final_state=="tautau"){
-            //lept_num_2 = isSecondTau(variables);
-        }
+            if (final_state=="mutau" or final_state=="etau"){
+                lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, tauDz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
+            }
+            else if (final_state=="tautau"){
+                //lept_num_2 = isSecondTau(variables);
+            }
         
-        // second lepton selection
-		if (lept_num_2<0) continue;
-		fillEvent(5,weight,lept_num_1, lept_num_2);
+            // second lepton selection
+            if (lept_num_2<0) continue;
+            fillEvent(5,weight,lept_num_1, lept_num_2, final_state);
 
-        // extra lepton rejection
-        bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
-        bool rejectMu = rejectMuon(nMu, muPt, muEta, muD0, muDz, muIDbit, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
+            // extra lepton rejection
+            bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
+            bool rejectMu = rejectMuon(nMu, muPt, muEta, muD0, muDz, muIDbit, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
         
-        if (final_state=="mutau" && rejectEle==true) continue;
-        else if (final_state=="etau" && rejectMu==true) continue;
-        else if (final_state=="tautau" && (rejectElectron==true || rejectMuon==true)) continue;
-		fillEvent(6,weight,lept_num_1, lept_num_2);
+            if (final_state=="mutau" && rejectEle==true) continue;
+            else if (final_state=="etau" && rejectMu==true) continue;
+            else if (final_state=="tautau" && (rejectElectron==true || rejectMuon==true)) continue;
+            fillEvent(6,weight,lept_num_1, lept_num_2, final_state);
 
-        // charge requirement selection
-        if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
-		fillEvent(7,weight,lept_num_1, lept_num_2);
-
-        
-        // this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
-        variables_t higher_vars = makeHigherVariables(pt_1->at(lept_num_1), pt_2->at(lept_num_2), eta_1->at(lept_num_1), eta_2->at(lept_num_2), phi_1->at(lept_num_1), phi_2->at(lept_num_2), charge_1->at(lept_num_1), charge_2->at(lept_num_2), energy_1->at(lept_num_1), energy_2->at(lept_num_2), pfMET, pfMETPhi);
+            // charge requirement selection
+            if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
+            fillEvent(7,weight,lept_num_1, lept_num_2, final_state);
 
         
-        // dR selection
-	if (higher_vars.dr<0.3) continue;
-	fillEvent(8,weight,lept_num_1, lept_num_2);
+            // this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
+            variables_t higher_vars = makeHigherVariables(pt_1->at(lept_num_1), pt_2->at(lept_num_2), eta_1->at(lept_num_1), eta_2->at(lept_num_2), phi_1->at(lept_num_1), phi_2->at(lept_num_2), charge_1->at(lept_num_1), charge_2->at(lept_num_2), energy_1->at(lept_num_1), energy_2->at(lept_num_2), pfMET, pfMETPhi);
 
-        // bjet selection
-	if (BjetVeto(nJet, jetBtag)==true) continue;
-	fillEvent(9,weight,lept_num_1, lept_num_2);
+        
+            // dR selection
+            if (higher_vars.dr<0.3) continue;
+            fillEvent(8,weight,lept_num_1, lept_num_2, final_state);
 
-/*
-		if (higher_vars.vis_pt  ) continue;
-		fillEvent(10,weight,lept_num_1, lept_num_2);
+            // bjet selection
+            if (BjetVeto(nJet, jetBtag)==true) continue;
+            fillEvent(9,weight,lept_num_1, lept_num_2, final_state);
 
-		if (pfMET  ) continue;
-		fillEvent(11,weight,lept_num_1, lept_num_2);
+    /*
+            if (higher_vars.vis_pt  ) continue;
+            fillEvent(10,weight,lept_num_1, lept_num_2, final_state);
 
-		if (higher_vars.inv_mass  ) continue;
-		fillEvent(12,weight,lept_num_1, lept_num_2);
-*/
- 
+            if (pfMET  ) continue;
+            fillEvent(11,weight,lept_num_1, lept_num_2, final_state);
+
+            if (higher_vars.inv_mass  ) continue;
+            fillEvent(12,weight,lept_num_1, lept_num_2, final_state);
+    */
+     
 	}
 }
 		
@@ -255,58 +255,89 @@ void post_analyzer_MC::BookHistos(const char* file2)
 }
 
 //Fill the sequential histos at a particular spot in the sequence
-void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1_index, int lep_2_index)
+void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1_index, int lep_2_index, const char* final_state)
 {
+    
+    //8********** make the variables accesaable ************
+    vector<float> pt_1;
+    vector<float> pt_2 = tauPt;
+    vector<float> eta_1;
+    vector<float> eta_2 = tauEta;
+    vector<float> phi_1;
+    vector<float> phi_2 = tauPhi;
+    vector<float> charge_1;
+    vector<float> charge_2 = tauCharge;
+    vector<float> energy_1;
+    vector<float> energy_2 = tauEnergy;
+    if (final_state=="mutau"){
+        pt_1 = muPt;
+        eta_1 = muEta;
+        phi_1 = muPhi;
+        charge_1 = muCharge;
+        energy_1 = muEn;
+    }
+    if (final_state=="etau"){
+        pt_1 = elePt;
+        eta_1 = eleEta;
+        phi_1 = elePhi;
+        charge_1 = eleCharge;
+        energy_1 = eleEn;
+    }
+    
+    variables_t higher_variables = makeHigherVariables(pt_1->at(lept_num_1), pt_2->at(lept_num_2), eta_1->at(lept_num_1), eta_2->at(lept_num_2), phi_1->at(lept_num_1), phi_2->at(lept_num_2), charge_1->at(lept_num_1), charge_2->at(lept_num_2), energy_1->at(lept_num_1), energy_2->at(lept_num_2), pfMET, pfMETPhi);
+    
+    
+    
 	//*********** fill lep_1s  ***********
-		h_lep_1_En[histoNumber]->Fill((eleEn->at(lep_1_index)),event_weight);
-		h_lep_1_Pt[histoNumber]->Fill((elePt->at(lep_1_index)),event_weight);		
-		h_lep_1_eta[histoNumber]->Fill(eleEta->at(lep_1_index),event_weight);
-		h_lep_1_SCEta[histoNumber]->Fill(eleSCEta->at(lep_1_index),event_weight);
-		h_lep_1_phi[histoNumber]->Fill(elePhi->at(lep_1_index),event_weight);
-		h_lep_1_SCPhi[histoNumber]->Fill(eleSCPhi->at(lep_1_index),event_weight);
-                h_lep_1_IDbit[histoNumber]->Fill( eleIDbit->at(lep_1_index)>>3&1,event_weight);
-	
-	//*********** fill lep_2s  ***********
+    h_lep_1_En[histoNumber]->Fill((energy_1->at(lep_1_index)),event_weight);
+    h_lep_1_Pt[histoNumber]->Fill((pt_1->at(lep_1_index)),event_weight);
+    h_lep_1_eta[histoNumber]->Fill(eta_1->at(lep_1_index),event_weight);
+    h_lep_1_phi[histoNumber]->Fill(phi_1->at(lep_1_index),event_weight);
 
-		h_lep_2_En[histoNumber]->Fill((lep_2Energy->at(lep_2_index)),event_weight);
-		h_lep_2_Pt[histoNumber]->Fill((lep_2Pt->at(lep_2_index)),event_weight);
-		h_lep_2_eta[histoNumber]->Fill(lep_2Eta->at(lep_2_index),event_weight);
-		h_lep_2_phi[histoNumber]->Fill(lep_2Phi->at(lep_2_index),event_weight);
-		
-	//*********** fill met  ***********		
-		h_pfMET[histoNumber]->Fill(pfMET,event_weight);
-		double dPhi_elep_2 = DeltaPhi(elePhi->at(lep_1_index),lep_2Phi->at(lep_2_index));
-		h_dPhi[histoNumber]->Fill(dPhi_elep_2,event_weight);
-		double dR_elep_2 = dR(lep_1_index,lep_2_index);
-		h_dR[histoNumber]->Fill(dR_elep_2,event_weight);
+//*********** fill lep_2s  ***********
+
+    h_lep_2_En[histoNumber]->Fill((energy_2->at(lep_2_index)),event_weight);
+    h_lep_2_Pt[histoNumber]->Fill((pt_2->at(lep_2_index)),event_weight);
+    h_lep_2_eta[histoNumber]->Fill(eta_2->at(lep_2_index),event_weight);
+    h_lep_2_phi[histoNumber]->Fill(phi_2->at(lep_2_index),event_weight);
+    
+//*********** fill met  ***********
+    h_pfMET[histoNumber]->Fill(pfMET,event_weight);
 
 
-	//*********** fill rest  ***********
+//*********** fill rest  ***********
 
-		float mT_eMet = TMass_F((elePt->at(lep_1_index)),(elePhi->at(lep_1_index)),pfMET,pfMETPhi  );
-		h_Mt[histoNumber]->Fill(mT_eMet,event_weight);
-		TLorentzVector myLep_2; 
-		myLep_2.SetPtEtaPhiE(lep_2Pt->at(lep_2_index),lep_2Eta->at(lep_2_index),lep_2Phi->at(lep_2_index), lep_2Energy->at(lep_2_index));		
-		TLorentzVector myEle; 
-		myEle.SetPtEtaPhiE(elePt->at(lep_1_index),eleEta->at(lep_1_index),elePhi->at(lep_1_index), eleEn->at(lep_1_index));
-		double visMass_elep_2 = VisMass_F(myLep_2, myEle);
-		h_VisibleMass[histoNumber]->Fill(visMass_elep_2,event_weight);
-		double HiggsPt = pTvecsum_F(elePt->at(lep_1_index),lep_2Pt->at(lep_2_index),elePhi->at(lep_1_index),lep_2Phi->at(lep_2_index) );
-		h_HiggsPt[histoNumber]->Fill(HiggsPt,event_weight);
-		h_nVtx[histoNumber]->Fill(nVtx,event_weight);
-		h_nEvents[histoNumber]->Fill(isData,event_weight);
-		
-		h_nJet[histoNumber]->Fill(nJet ,event_weight);
-		//		if(jetsize>0){
-		//h_leadingJetPt[histoNumber]->Fill(jetPt->at(),event_weight);
-		//h_leadingJetPt_300[histoNumber]->Fill(jetPt->at(),event_weight);
-		//h_leadingJetEta[histoNumber]->Fill(jetEta->at(),event_weight);
-		//}
-		//h_genHT[histoNumber]->Fill(genHT);
-		//h_genWeight[histoNumber]->Fill(genWeight);
-		float rel_Iso = ( elePFChIso->at(lep_1_index) + max( elePFNeuIso->at(lep_1_index) + elePFPhoIso->at(lep_1_index) - 0.5 *elePFPUIso->at(lep_1_index) , 0.0 )) / (elePt->at(lep_1_index));
-                h_lep_1_Iso[histoNumber]->Fill(rel_Iso,event_weight);
-                h_lep_2_Iso[histoNumber]->Fill(lep_2byTightIsolationMVArun2017v2DBoldDMwLT2017->at(lep_2_index),event_weight);
+    double dPhi = DeltaPhi(phi_1->at(lep_1_index),phi_2->at(lep_2_index));
+    h_dPhi[histoNumber]->Fill(dPhi,event_weight);
+    h_dR[histoNumber]->Fill(higher_variables.dr,event_weight);
+
+    h_Mt[histoNumber]->Fill(higher_variables.mt_total, event_weight);
+    h_VisibleMass[histoNumber]->Fill(higher_variables.inv_mass, event_weight);
+    h_HiggsPt[histoNumber]->Fill(higher_variables.vis_pt, event_weight);
+    h_nVtx[histoNumber]->Fill(nVtx, event_weight);
+    h_nEvents[histoNumber]->Fill(isData, event_weight);
+    
+    h_nJet[histoNumber]->Fill(nJet, event_weight);
+    
+    //		if(jetsize>0){
+    //h_leadingJetPt[histoNumber]->Fill(jetPt->at(),event_weight);
+    //h_leadingJetPt_300[histoNumber]->Fill(jetPt->at(),event_weight);
+    //h_leadingJetEta[histoNumber]->Fill(jetEta->at(),event_weight);
+    //}
+    //h_genHT[histoNumber]->Fill(genHT);
+    //h_genWeight[histoNumber]->Fill(genWeight);
+    
+    float rel_Iso;
+    
+    if (final_state=="etau"){
+        rel_Iso = ( elePFChIso->at(lep_1_index) + max( elePFNeuIso->at(lep_1_index) + elePFPhoIso->at(lep_1_index) - 0.5 *elePFPUIso->at(lep_1_index) , 0.0 )) / (elePt->at(lep_1_index));
+    }
+    else if (final_state=="mutau"){
+        rel_Iso = (muPFChIso->at(counter) + TMath::Max(0.0, muPFNeuIso->at(counter) + muPFPhoIso->at(counter) - 0.5*muPFPUIso->at(counter)))/(muPt->at(counter));
+    }
+        
+    h_lep_1_Iso[histoNumber]->Fill(rel_Iso,event_weight);
+    h_lep_2_Iso[histoNumber]->Fill(tauByTightIsolationMVArun2017v2DBoldDMwLT2017->at(lep_2_index),event_weight);
 
 }
 
