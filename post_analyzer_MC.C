@@ -20,12 +20,7 @@
 #include "selections.h"
 #include "scale_factors.h"
 #include "higher_vars.h"
-
-
-// TODO:
-// Find a way to include the final state as a string into the call for everything, so the program is final-state flexible
-// Figure out how/where to store the declarations of the histograms, and fill them in a nice way. Ask Jithin for help.
-// Comment everything so people understand what the hell is going on.
+#include "post_analyzer_MC.h"
 
 
 
@@ -41,7 +36,7 @@ int main(int argc, const char* argv[]){
     		return 1;
   	}
 	post_analyzer_MC t(argv[1]);
-	t.Loop(maxevents,reportEvery, argv[2], argv[6]);
+	t.Loop(maxEvents,reportEvery, argv[2], argv[6]);
 	return 0;
 }
 
@@ -141,7 +136,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
         // first lepton selection
         if (lept_num_1<0) continue;
-		fillEvent(4,weight,lept_num_1, lept_num_2);
+	fillEvent(4,weight,lept_num_1, lept_num_2);
 
         
         if (final_state=="mutau"){
@@ -178,12 +173,12 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 
         
         // dR selection
-		if (higher_vars.dr<0.3) continue;
-		fillEvent(8,weight,lept_num_1, lept_num_2);
+	if (higher_vars.dr<0.3) continue;
+	fillEvent(8,weight,lept_num_1, lept_num_2);
 
         // bjet selection
-		if (BjetVeto(nJet, jetBtag)==true) continue;
-		fillEvent(9,weight,lept_num_1, lept_num_2);
+	if (BjetVeto(nJet, jetBtag)==true) continue;
+	fillEvent(9,weight,lept_num_1, lept_num_2);
 
 /*
 		if (higher_vars.vis_pt  ) continue;
@@ -202,6 +197,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 
 void post_analyzer_MC::BookHistos(const char* file2)
 {
+	TFile fileName;
 	fileName = new TFile(file2, "RECREATE");
 	//tree = new TTree("ADD","ADD");
 	//tree->Branch("event_","std::vector<unsigned int>",&event_);
@@ -231,11 +227,11 @@ void post_analyzer_MC::BookHistos(const char* file2)
 		h_lep_1_SCPhi[i] = new TH1F(("Lepton_1_SCphi"+histname).c_str(), "Lepton_1_SCphi", 21,-3.14,3.14);h_lep_1_SCPhi[i]->Sumw2();
 		h_lep_1_IDbit[i] = new TH1F(("Lepton_1_ID_bit"+histname).c_str(), "Lepton_1_ID_bit",8,0,8);h_lep_1_IDbit[i]->Sumw2();
 		//**************  tau  **************
-		h_tau_En[i] = new TH1F(("Tau_En"+histname).c_str(), "Tau_En",12,PtBins);h_tau_En[i]->Sumw2();
-		h_tau_Pt[i] = new TH1F(("Tau_Pt"+histname).c_str(), "Tau_Pt",12,PtBins);h_tau_Pt[i]->Sumw2();
-		h_tau_eta[i] = new TH1F(("Tau_eta"+histname).c_str(), "Tau_eta",20,-3.0, 3.0);h_tau_eta[i]->Sumw2();
+		h_lep_2_En[i] = new TH1F(("Lepton_2_En"+histname).c_str(), "Lepton_2_En",12,PtBins);h_lep_2_En[i]->Sumw2();
+		h_lep_2_Pt[i] = new TH1F(("Lepton_2_Pt"+histname).c_str(), "Lepton_2_Pt",12,PtBins);h_lep_2_Pt[i]->Sumw2();
+		h_lep_2_eta[i] = new TH1F(("Lepton_2_eta"+histname).c_str(), "Lepton_2_eta",20,-3.0, 3.0);h_lep_2_eta[i]->Sumw2();
 
-		h_tau_phi[i] = new TH1F(("Tau_phi"+histname).c_str(), "Tau_phi", 21,-3.14,3.14);h_tau_phi[i]->Sumw2();
+		h_lep_2_phi[i] = new TH1F(("Lepton_2_phi"+histname).c_str(), "Lepton_2_phi", 21,-3.14,3.14);h_lep_2_phi[i]->Sumw2();
 		//**************  Met  **************
 		h_pfMET[i] = new TH1F(("pfMET"+histname).c_str(), "pfMET",14,MetBins);h_pfMET[i]->Sumw2();
 
