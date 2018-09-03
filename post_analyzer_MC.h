@@ -22,6 +22,8 @@
 #include "vector"
 #include "vector"
 
+using namespace std;
+
 class post_analyzer_MC {
     public :
     TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -46,7 +48,9 @@ class post_analyzer_MC {
     TH1F *h_genWeight[25];
     TH1F *h_tauIso[25];
     TH1F *h_lep_1_Iso[25];
-    
+    TH1F *h_lep_2_Iso[25];   
+
+ 
     // Declaration of leaf types
    Int_t           run;
    Long64_t        event;
@@ -793,15 +797,15 @@ class post_analyzer_MC {
    TBranch        *b_jetVtx3DVal;   //!
    TBranch        *b_jetVtx3DSig;   //!
     
-    post_analyzer_MC(TTree *tree=0);
-    virtual ~post_analyzer_MC();
+    post_analyzer_MC(const char* file1, const char* file2);
+//    virtual ~post_analyzer_MC();
     virtual Int_t    Cut(Long64_t entry);
     virtual Int_t    GetEntry(Long64_t entry);
     virtual Long64_t LoadTree(Long64_t entry);
     virtual void     Init(TTree *tree);
-    virtual void     Loop();
+    virtual void     Loop(Long64_t maxevents, int reportEvery, const char* save_name, const char* final_state);
     virtual void     BookHistos(const char* file2);
-    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index);
+    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, const char* final_state);
 
     virtual Bool_t   Notify();
     virtual void     Show(Long64_t entry = -1);

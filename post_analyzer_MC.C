@@ -22,7 +22,7 @@
 #include "higher_vars.h"
 #include "post_analyzer_MC.h"
 
-
+using namespace std;
 
 int main(int argc, const char* argv[]){
 	Long64_t maxEvents = atof(argv[3]);
@@ -35,7 +35,7 @@ int main(int argc, const char* argv[]){
 		std::cout<<"Please enter a valid value for reportEvery (parameter 4)."<<std::endl;
     		return 1;
   	}
-	post_analyzer_MC t(argv[1]);
+	post_analyzer_MC t(argv[1], argv[1]);
 	t.Loop(maxEvents,reportEvery, argv[2], argv[6]);
 	return 0;
 }
@@ -71,16 +71,18 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 
 
             // Create variables for easier use later, using a lepton number instead of name. More flexible
-            vector<float> pt_1;
-            vector<float> pt_2 = tauPt;
-            vector<float> eta_1;
-            vector<float> eta_2 = tauEta;
-            vector<float> phi_1;
-            vector<float> phi_2 = tauPhi;
-            vector<float> charge_1;
-            vector<float> charge_2 = tauCharge;
-            vector<float> energy_1;
-            vector<float> energy_2 = tauEnergy;
+       
+
+            vector<float>* pt_1;
+            vector<float>* pt_2 = tauPt;
+            vector<float>* eta_1;
+            vector<float>* eta_2 = tauEta;
+            vector<float>* phi_1;
+            vector<float>* phi_2 = tauPhi;
+            vector<int>* charge_1;
+            vector<float>* charge_2 = tauCharge;
+            vector<float>* energy_1;
+            vector<float>* energy_2 = tauEnergy;
             if (final_state=="mutau"){
                 pt_1 = muPt;
                 eta_1 = muEta;
@@ -95,7 +97,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
                 charge_1 = eleCharge;
                 energy_1 = eleEn;
             }
-        
+            
 
             // housekeeping, making sure that we use the inclusive W+jets sample correctly.
             if ((string(save_name)).rfind("WJets2J",0)==0){
@@ -106,14 +108,14 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
             // Making sure that no events have negative weights
             double weight=1.0;
-            genWeight > 0.0 ? event_weight *= genWeight/fabs(genWeight) : event_weight = 0.0;
+            genWeight > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0.0;
 
 
-            fillEvent(1,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(1,weight,lept_num_1, lept_num_2, final_state);
 
             // met filter selection
             if (!(metFilters==0)) continue;
-            fillEvent(2,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(2,weight,lept_num_1, lept_num_2, final_state);
 
         
         
@@ -121,13 +123,13 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
             // trigger selection
             // function "trig_num" is in the selections header, indicates which trigger is to be used
             if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
-            fillEvent(3,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(3,weight,lept_num_1, lept_num_2, final_state);
 
             if (final_state=="mutau"){
                 lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
             }
             else if (final_state=="etau"){
-                lept_num_1 = isElectron(nEle, elePt, eleEta, eteIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
+                lept_num_1 = isElectron(nEle, elePt, eleEta, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
             }
             else if (final_state=="tautau"){
                 //lept_num_1 = isFirstTau(variables);
@@ -136,15 +138,15 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
             // first lepton selection
             if (lept_num_1<0) continue;
-            fillEvent(4,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(4,weight,lept_num_1, lept_num_2, final_state);
 
         
             if (final_state=="mutau"){
-                weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo)*trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo);
+                // weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo)*trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo);
             }
         
             if (final_state=="mutau" or final_state=="etau"){
-                lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, tauDz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
+                lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
             }
             else if (final_state=="tautau"){
                 //lept_num_2 = isSecondTau(variables);
@@ -152,7 +154,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
             // second lepton selection
             if (lept_num_2<0) continue;
-            fillEvent(5,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(5,weight,lept_num_1, lept_num_2, final_state);
 
             // extra lepton rejection
             bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
@@ -160,12 +162,12 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
             if (final_state=="mutau" && rejectEle==true) continue;
             else if (final_state=="etau" && rejectMu==true) continue;
-            else if (final_state=="tautau" && (rejectElectron==true || rejectMuon==true)) continue;
-            fillEvent(6,weight,lept_num_1, lept_num_2, final_state);
+            else if (final_state=="tautau" && (rejectEle==true || rejectMu==true)) continue;
+            fillHistos(6,weight,lept_num_1, lept_num_2, final_state);
 
             // charge requirement selection
             if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
-            fillEvent(7,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(7,weight,lept_num_1, lept_num_2, final_state);
 
         
             // this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
@@ -174,21 +176,21 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
         
             // dR selection
             if (higher_vars.dr<0.3) continue;
-            fillEvent(8,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(8,weight,lept_num_1, lept_num_2, final_state);
 
             // bjet selection
-            if (BjetVeto(nJet, jetBtag)==true) continue;
-            fillEvent(9,weight,lept_num_1, lept_num_2, final_state);
+            if (BjetVeto(nJet, jetCSV2BJetTags)==true) continue;
+            fillHistos(9,weight,lept_num_1, lept_num_2, final_state);
 
     /*
             if (higher_vars.vis_pt  ) continue;
-            fillEvent(10,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(10,weight,lept_num_1, lept_num_2, final_state);
 
             if (pfMET  ) continue;
-            fillEvent(11,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(11,weight,lept_num_1, lept_num_2, final_state);
 
             if (higher_vars.inv_mass  ) continue;
-            fillEvent(12,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(12,weight,lept_num_1, lept_num_2, final_state);
     */
      
 	}
@@ -197,7 +199,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
 
 void post_analyzer_MC::BookHistos(const char* file2)
 {
-	TFile fileName;
+	TFile *fileName;
 	fileName = new TFile(file2, "RECREATE");
 	//tree = new TTree("ADD","ADD");
 	//tree->Branch("event_","std::vector<unsigned int>",&event_);
@@ -259,16 +261,17 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
 {
     
     //8********** make the variables accesaable ************
-    vector<float> pt_1;
-    vector<float> pt_2 = tauPt;
-    vector<float> eta_1;
-    vector<float> eta_2 = tauEta;
-    vector<float> phi_1;
-    vector<float> phi_2 = tauPhi;
-    vector<float> charge_1;
-    vector<float> charge_2 = tauCharge;
-    vector<float> energy_1;
-    vector<float> energy_2 = tauEnergy;
+    
+    vector<float>* pt_1;
+    vector<float>* pt_2 = tauPt;
+    vector<float>* eta_1;
+    vector<float>* eta_2 = tauEta;
+    vector<float>* phi_1;
+    vector<float>* phi_2 = tauPhi;
+    vector<int>* charge_1;
+    vector<float>* charge_2 = tauCharge;
+    vector<float>* energy_1;
+    vector<float>* energy_2 = tauEnergy;
     if (final_state=="mutau"){
         pt_1 = muPt;
         eta_1 = muEta;
@@ -283,8 +286,8 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
         charge_1 = eleCharge;
         energy_1 = eleEn;
     }
-    
-    variables_t higher_variables = makeHigherVariables(pt_1->at(lept_num_1), pt_2->at(lept_num_2), eta_1->at(lept_num_1), eta_2->at(lept_num_2), phi_1->at(lept_num_1), phi_2->at(lept_num_2), charge_1->at(lept_num_1), charge_2->at(lept_num_2), energy_1->at(lept_num_1), energy_2->at(lept_num_2), pfMET, pfMETPhi);
+
+    variables_t higher_variables = makeHigherVariables(pt_1->at(lep_1_index), pt_2->at(lep_2_index), eta_1->at(lep_1_index), eta_2->at(lep_2_index), phi_1->at(lep_1_index), phi_2->at(lep_2_index), charge_1->at(lep_1_index), charge_2->at(lep_2_index), energy_1->at(lep_1_index), energy_2->at(lep_2_index), pfMET, pfMETPhi);
     
     
     
@@ -307,7 +310,7 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
 
 //*********** fill rest  ***********
 
-    double dPhi = DeltaPhi(phi_1->at(lep_1_index),phi_2->at(lep_2_index));
+    double dPhi = fabs(phi_1->at(lep_1_index)-phi_2->at(lep_2_index));
     h_dPhi[histoNumber]->Fill(dPhi,event_weight);
     h_dR[histoNumber]->Fill(higher_variables.dr,event_weight);
 
@@ -333,11 +336,11 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
         rel_Iso = ( elePFChIso->at(lep_1_index) + max( elePFNeuIso->at(lep_1_index) + elePFPhoIso->at(lep_1_index) - 0.5 *elePFPUIso->at(lep_1_index) , 0.0 )) / (elePt->at(lep_1_index));
     }
     else if (final_state=="mutau"){
-        rel_Iso = (muPFChIso->at(counter) + TMath::Max(0.0, muPFNeuIso->at(counter) + muPFPhoIso->at(counter) - 0.5*muPFPUIso->at(counter)))/(muPt->at(counter));
+        rel_Iso = (muPFChIso->at(lep_1_index) + TMath::Max(0.0, muPFNeuIso->at(lep_1_index) + muPFPhoIso->at(lep_1_index) - 0.5*muPFPUIso->at(lep_1_index)))/(muPt->at(lep_1_index));
     }
         
     h_lep_1_Iso[histoNumber]->Fill(rel_Iso,event_weight);
-    h_lep_2_Iso[histoNumber]->Fill(tauByTightIsolationMVArun2017v2DBoldDMwLT2017->at(lep_2_index),event_weight);
+    h_lep_2_Iso[histoNumber]->Fill(tauByTightIsolationMVArun2v1DBoldDMwLT->at(lep_2_index),event_weight);
 
 }
 

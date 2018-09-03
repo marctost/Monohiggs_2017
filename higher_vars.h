@@ -31,11 +31,11 @@ variables_t makeHigherVariables(float pt_1, float pt_2, float eta_1, float eta_2
     
     TLorentzVector lept_1; lept_1.SetPtEtaPhiE(pt_1, eta_1, phi_1, energy_1);
     TLorentzVector lept_2; lept_2.SetPtEtaPhiE(pt_2, eta_2, phi_2, energy_2);
-    TLorentzVector pfMET_h; pfMET.SetPtEtaPhiM(pfMET, 0, pfMETPhi, 0);
+    TLorentzVector pfMET_h; pfMET_h.SetPtEtaPhiM(pfMET, 0, pfMETPhi, 0);
     
     variables_t use;
     
-    use.vis_pt = pTvecsum_f(pt_1*cos(phi_1), pt_2*cos(phi_2), pt_1*sin(phi_1), pt_2*sin(phi_2));
+    use.vis_pt = pTvecsum_F(pt_1*cos(phi_1), pt_2*cos(phi_2), pt_1*sin(phi_1), pt_2*sin(phi_2));
     use.inv_mass = (lept_1+lept_2).M();
     use.mt_total = (lept_1+lept_2+pfMET_h).M();
     use.dr = dR(eta_1, phi_1, eta_2, phi_2);
