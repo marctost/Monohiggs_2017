@@ -7,10 +7,33 @@
 
 #ifndef post_analyzer_MC_h
 #define post_analyzer_MC_h
-
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <cmath>
+#include <map>
+#include <list>
+#include <vector>
+#include <bitset>
+#include <TCanvas.h>
+#include <TSystem.h>
+#include <TPostScript.h>
+#include <TH2.h>
+#include <TH1.h>
+#include <TF1.h>
+#include <TMath.h>
+#include <TLegend.h>
+#include <TProfile.h>
+#include <TGraph.h>
+#include <TRef.h>
+#include <TList.h>
+#include <TSystemFile.h>
+#include <TSystemDirectory.h>
+//#include <TDCacheFile.h>
+#include <TLorentzVector.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -25,31 +48,31 @@
 using namespace std;
 
 class post_analyzer_MC {
-    public :
-    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
-    Int_t           fCurrent; //!current Tree number in a TChain
-    
+ public :
+  TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+  Int_t           fCurrent; //!current Tree number in a TChain
+  
     // Fixed size dimensions of array or collections stored in the TTree if any.
+  TFile *fileName; 
+  TTree *tree;  
+  TH1F *h_lep_1_En[25], *h_lep_1_Pt[25], *h_lep_1_eta[25], *h_lep_1_SCEta[25], *h_lep_1_phi[25],  *h_lep_1_SCPhi[25],  *h_lep_1_IDbit[25];
+  
+  TH1F *h_lep_2_En[25],*h_lep_2_Pt[25], *h_lep_2_eta[25], *h_lep_2_phi[25];
 
-
-    TH1F *h_lep_1_En[25], *h_lep_1_Pt[25], *h_lep_1_eta[25], *h_lep_1_SCEta[25], *h_lep_1_phi[25],  *h_lep_1_SCPhi[25],  *h_lep_1_IDbit[25];
-
-    TH1F *h_lep_2_En[25],*h_lep_2_Pt[25], *h_lep_2_eta[25], *h_lep_2_phi[25];
-
-    TH1F *h_pfMET[25], *h_dPhi[25], *h_dR[25];
-    TH1F *h_pfMET_300[25];
-    TH1F *h_nJet[25];
-    TH1F *h_leadingJetPt[25];
-    TH1F *h_leadingJetEta[25];
-    TH1F *h_Mt[25], *h_VisibleMass[25], *h_HiggsPt[25];
-    TH1F *h_nVtx[25];
-    TH1F *h_nEvents[25];
-    TH1F *h_genHT[25];
-    TH1F *h_genWeight[25];
-    TH1F *h_tauIso[25];
-    TH1F *h_lep_1_Iso[25];
-    TH1F *h_lep_2_Iso[25];   
-
+  TH1F *h_pfMET[25], *h_dPhi[25], *h_dR[25];
+  TH1F *h_pfMET_300[25];
+  TH1F *h_nJet[25];
+  TH1F *h_leadingJetPt[25];
+  TH1F *h_leadingJetEta[25];
+  TH1F *h_Mt[25], *h_VisibleMass[25], *h_HiggsPt[25];
+  TH1F *h_nVtx[25];
+  TH1F *h_nEvents[25];
+  TH1F *h_genHT[25];
+  TH1F *h_genWeight[25];
+  TH1F *h_tauIso[25];
+  TH1F *h_lep_1_Iso[25];
+  TH1F *h_lep_2_Iso[25];   
+  
  
     // Declaration of leaf types
    Int_t           run;
@@ -798,12 +821,12 @@ class post_analyzer_MC {
    TBranch        *b_jetVtx3DSig;   //!
     
     post_analyzer_MC(const char* file1, const char* file2);
-//    virtual ~post_analyzer_MC();
+    virtual ~post_analyzer_MC();
     virtual Int_t    Cut(Long64_t entry);
     virtual Int_t    GetEntry(Long64_t entry);
     virtual Long64_t LoadTree(Long64_t entry);
     virtual void     Init(TTree *tree);
-    virtual void     Loop(Long64_t maxevents, int reportEvery, const char* save_name, const char* final_state);
+    virtual void     Loop(Long64_t maxevents, int reportEvery, string SampleName,string save_name, string finalState);
     virtual void     BookHistos(const char* file2);
     virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, const char* final_state);
 
@@ -818,7 +841,7 @@ class post_analyzer_MC {
 post_analyzer_MC::post_analyzer_MC(const char* file1, const char* file2)
 {
   TChain *chain = new TChain("ggNtuplizer/EventTree");
-  //Run over all files in file1, presumably /hdfs/store/user/<etc>/ (must end with a /)                                                                     \
+  //Run over all files in file1, presumably /hdfs/store/user/<etc>/ (must end with a /)                                                           
 
   TString path = file1;
   TSystemDirectory sourceDir("hi",path);

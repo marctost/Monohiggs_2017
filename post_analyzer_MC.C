@@ -1,3 +1,26 @@
+#define post_analyzer_MC_cxx
+#include "post_analyzer_MC.h"
+#include <TH2.h>
+#include <TStyle.h>
+#include <TCanvas.h>
+#include "TH1F.h"
+#include <iostream>
+#include <bitset>
+#include <climits>
+#include <cstring>
+#include "Math/Minimizer.h"
+#include "Math/Factory.h"
+#include "Math/Functor.h"
+#include "TStopwatch.h"
+#include <algorithm>
+#include <vector>
+#include <iterator>
+#include <list>
+#include <set>
+#include "TMath.h" //M_PI is in TMath
+#include "TRandom3.h"
+#include <TLorentzVector.h>
+
 #include <string>
 #include <sstream>
 #include <utility>
@@ -20,12 +43,17 @@
 #include "selections.h"
 #include "scale_factors.h"
 #include "higher_vars.h"
-#include "post_analyzer_MC.h"
+
 
 using namespace std;
+using std::vector;
 
 int main(int argc, const char* argv[]){
 	Long64_t maxEvents = atof(argv[3]);
+	std::string SampleName = argv[5];
+	std::string finalState = argv[6];
+	std::string save_name = argv[2];
+
 	if (maxEvents < -1LL){
 		std::cout<<"Please enter a valid value for maxEvents (parameter 3)."<<std::endl;
     		return 1;
@@ -35,15 +63,18 @@ int main(int argc, const char* argv[]){
 		std::cout<<"Please enter a valid value for reportEvery (parameter 4)."<<std::endl;
     		return 1;
   	}
-	post_analyzer_MC t(argv[1], argv[1]);
-	t.Loop(maxEvents,reportEvery, argv[2], argv[6]);
+	post_analyzer_MC t(argv[1], argv[2]);
+	t.Loop(maxEvents,reportEvery, SampleName, save_name, finalState);
 	return 0;
 }
 
 
 
-void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* save_name, const char* final_state){
+void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleName, string save_name, string finalState){
 	if (fChain==0) return;
+	
+	TString sample = TString(SampleName);
+	TString final_state = TString(finalState);
 
 	Long64_t nentries = fChain->GetEntriesFast();
    	Long64_t nentriesToCheck = nentries;
@@ -56,22 +87,22 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, const char* sav
   	double nInspected_genWeighted;
   	nInspected_genWeighted = 0.0;
 	Long64_t nbytes = 0, nb = 0;
-    int lept_num_1=-1;
-    int lept_num_2=-1;
+	int lept_num_1=-1;
+	int lept_num_2=-1;
 
    	for (Long64_t jentry=0; jentry<nentriesToCheck;jentry++) {
-      		Long64_t i = LoadTree(jentry);
-      		if (i < 0) break;
-      		nb = fChain->GetEntry(jentry);   nbytes += nb;
-
-      		if (jentry%reportEvery == 0){
-         		std::cout<<"Finished entry "<<jentry<<"/"<<(nentriesToCheck-1)<<std::endl;
-         		fflush(stdout);
-      		}
-
-
-            // Create variables for easier use later, using a lepton number instead of name. More flexible
-       
+	  Long64_t i = LoadTree(jentry);
+	  if (i < 0) break;
+	  nb = fChain->GetEntry(jentry);   nbytes += nb;
+	  
+	  if (jentry%reportEvery == 0){
+	    std::cout<<"Finished entry "<<jentry<<"/"<<(nentriesToCheck-1)<<std::endl;
+	    fflush(stdout);
+	  }
+	  
+	  
+	  // Create variables for easier use later, using a lepton number instead of name. More flexible
+	  
 
             vector<float>* pt_1;
             vector<float>* pt_2 = tauPt;
