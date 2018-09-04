@@ -48,6 +48,7 @@
 using namespace std;
 using std::vector;
 
+
 int main(int argc, const char* argv[]){
 	Long64_t maxEvents = atof(argv[3]);
 	std::string SampleName = argv[5];
@@ -129,7 +130,6 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
                 energy_1 = eleEn;
             }
             
-
             // housekeeping, making sure that we use the inclusive W+jets sample correctly.
             if ((string(save_name)).rfind("WJets2J",0)==0){
                 if (genHT>200){
@@ -140,7 +140,6 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             // Making sure that no events have negative weights
             double weight=1.0;
             genWeight > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0.0;
-
 
             fillHistos(1,weight,lept_num_1, lept_num_2, final_state);
 
@@ -225,6 +224,8 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
     */
      
 	}
+
+    write_histos();
 }
 		
 
@@ -291,8 +292,7 @@ void post_analyzer_MC::BookHistos(const char* file2)
 void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1_index, int lep_2_index, const char* final_state)
 {
     
-    //8********** make the variables accesaable ************
-    
+    //8********** make the variables accesaable ************ 
     vector<float>* pt_1;
     vector<float>* pt_2 = tauPt;
     vector<float>* eta_1;
@@ -317,37 +317,56 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
         charge_1 = eleCharge;
         energy_1 = eleEn;
     }
+ 
 
-    variables_t higher_variables = makeHigherVariables(pt_1->at(lep_1_index), pt_2->at(lep_2_index), eta_1->at(lep_1_index), eta_2->at(lep_2_index), phi_1->at(lep_1_index), phi_2->at(lep_2_index), charge_1->at(lep_1_index), charge_2->at(lep_2_index), energy_1->at(lep_1_index), energy_2->at(lep_2_index), pfMET, pfMETPhi);
     
-    
-    
+    if (lep_1_index>-1 && lep_2_index>-1){
+
+        variables_t higher_variables = makeHigherVariables(pt_1->at(lep_1_index), pt_2->at(lep_2_index), eta_1->at(lep_1_index), eta_2->at(lep_2_index), phi_1->at(lep_1_index), phi_2->at(lep_2_index), charge_1->at(lep_1_index), charge_2->at(lep_2_index), energy_1->at(lep_1_index), energy_2->at(lep_2_index), pfMET, pfMETPhi);
+
 	//*********** fill lep_1s  ***********
-    h_lep_1_En[histoNumber]->Fill((energy_1->at(lep_1_index)),event_weight);
-    h_lep_1_Pt[histoNumber]->Fill((pt_1->at(lep_1_index)),event_weight);
-    h_lep_1_eta[histoNumber]->Fill(eta_1->at(lep_1_index),event_weight);
-    h_lep_1_phi[histoNumber]->Fill(phi_1->at(lep_1_index),event_weight);
+        h_lep_1_En[histoNumber]->Fill((energy_1->at(lep_1_index)),event_weight);
+        h_lep_1_Pt[histoNumber]->Fill((pt_1->at(lep_1_index)),event_weight);
+        h_lep_1_eta[histoNumber]->Fill(eta_1->at(lep_1_index),event_weight);
+        h_lep_1_phi[histoNumber]->Fill(phi_1->at(lep_1_index),event_weight);
 
-//*********** fill lep_2s  ***********
+        //*********** fill lep_2s  ***********
 
-    h_lep_2_En[histoNumber]->Fill((energy_2->at(lep_2_index)),event_weight);
-    h_lep_2_Pt[histoNumber]->Fill((pt_2->at(lep_2_index)),event_weight);
-    h_lep_2_eta[histoNumber]->Fill(eta_2->at(lep_2_index),event_weight);
-    h_lep_2_phi[histoNumber]->Fill(phi_2->at(lep_2_index),event_weight);
+        h_lep_2_En[histoNumber]->Fill((energy_2->at(lep_2_index)),event_weight);
+        h_lep_2_Pt[histoNumber]->Fill((pt_2->at(lep_2_index)),event_weight);
+        h_lep_2_eta[histoNumber]->Fill(eta_2->at(lep_2_index),event_weight);
+        h_lep_2_phi[histoNumber]->Fill(phi_2->at(lep_2_index),event_weight);
+
+
+        double dPhi = fabs(phi_1->at(lep_1_index)-phi_2->at(lep_2_index));
+        h_dPhi[histoNumber]->Fill(dPhi,event_weight);
+        h_dR[histoNumber]->Fill(higher_variables.dr,event_weight);
+
+        h_Mt[histoNumber]->Fill(higher_variables.mt_total, event_weight);
+        h_VisibleMass[histoNumber]->Fill(higher_variables.inv_mass, event_weight);
+        h_HiggsPt[histoNumber]->Fill(higher_variables.vis_pt, event_weight);
+
+
+        float rel_Iso;
+
+        if (final_state=="etau"){
+            rel_Iso = ( elePFChIso->at(lep_1_index) + max( elePFNeuIso->at(lep_1_index) + elePFPhoIso->at(lep_1_index) - 0.5 *elePFPUIso->at(lep_1_index) , 0.0 )) / (elePt->at(lep_1_index));
+        }
+        else if (final_state=="mutau"){
+            rel_Iso = (muPFChIso->at(lep_1_index) + TMath::Max(0.0, muPFNeuIso->at(lep_1_index) + muPFPhoIso->at(lep_1_index) - 0.5*muPFPUIso->at(lep_1_index)))/(muPt->at(lep_1_index));
+        }
+
+        h_lep_1_Iso[histoNumber]->Fill(rel_Iso,event_weight);
+        h_lep_2_Iso[histoNumber]->Fill(tauByTightIsolationMVArun2v1DBoldDMwLT->at(lep_2_index),event_weight);
+    }
     
-//*********** fill met  ***********
+
+        //*********** fill met  ***********
     h_pfMET[histoNumber]->Fill(pfMET,event_weight);
 
 
 //*********** fill rest  ***********
 
-    double dPhi = fabs(phi_1->at(lep_1_index)-phi_2->at(lep_2_index));
-    h_dPhi[histoNumber]->Fill(dPhi,event_weight);
-    h_dR[histoNumber]->Fill(higher_variables.dr,event_weight);
-
-    h_Mt[histoNumber]->Fill(higher_variables.mt_total, event_weight);
-    h_VisibleMass[histoNumber]->Fill(higher_variables.inv_mass, event_weight);
-    h_HiggsPt[histoNumber]->Fill(higher_variables.vis_pt, event_weight);
     h_nVtx[histoNumber]->Fill(nVtx, event_weight);
     h_nEvents[histoNumber]->Fill(isData, event_weight);
     
@@ -360,26 +379,38 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
     //}
     //h_genHT[histoNumber]->Fill(genHT);
     //h_genWeight[histoNumber]->Fill(genWeight);
-    
-    float rel_Iso;
-    
-    if (final_state=="etau"){
-        rel_Iso = ( elePFChIso->at(lep_1_index) + max( elePFNeuIso->at(lep_1_index) + elePFPhoIso->at(lep_1_index) - 0.5 *elePFPUIso->at(lep_1_index) , 0.0 )) / (elePt->at(lep_1_index));
-    }
-    else if (final_state=="mutau"){
-        rel_Iso = (muPFChIso->at(lep_1_index) + TMath::Max(0.0, muPFNeuIso->at(lep_1_index) + muPFPhoIso->at(lep_1_index) - 0.5*muPFPUIso->at(lep_1_index)))/(muPt->at(lep_1_index));
-    }
-        
-    h_lep_1_Iso[histoNumber]->Fill(rel_Iso,event_weight);
-    h_lep_2_Iso[histoNumber]->Fill(tauByTightIsolationMVArun2v1DBoldDMwLT->at(lep_2_index),event_weight);
+
 
 }
 
 	
+void write_histos(){
+    for (int histoNumber=1; histoNumber<10; histoNumber++){
 
+        h_lep_1_En[histoNumber]->Write();
+        h_lep_1_Pt[histoNumber]->Write();
+        h_lep_1_eta[histoNumber]->Write();
+        h_lep_1_phi[histoNumber]->Write();
 
+        h_lep_2_En[histoNumber]->Write();
+        h_lep_2_Pt[histoNumber]->Write();
+        h_lep_2_eta[histoNumber]->Write();
+        h_lep_2_phi[histoNumber]->Write();
 
+        h_lep_1_Iso[histoNumber]->Write();
+        h_lep_2_Iso[histoNumber]->Write();
 
+        h_dPhi[histoNumber]->Write();
+        h_dR[histoNumber]->Write();
+        h_Mt[histoNumber]->Write();
+        h_VisibleMass[histoNumber]->Write();
+        h_HiggsPt[histoNumber]->Write();
+ 
+        h_pfMET[histoNumber]->Write();
+        h_nVtx[histoNumber]->Write();
+        h_nJet[histoNumber]->Write();
+    }
+}
 
 
 

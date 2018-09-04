@@ -829,6 +829,7 @@ class post_analyzer_MC {
     virtual void     Loop(Long64_t maxevents, int reportEvery, string SampleName,string save_name, string finalState);
     virtual void     BookHistos(const char* file2);
     virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, const char* final_state);
+    virtual void     write_histos();
 
     virtual Bool_t   Notify();
     virtual void     Show(Long64_t entry = -1);
