@@ -1,0 +1,4 @@
+git pull
+git add -A
+git commit -m "describe the changes you made"
+git push origin master

@@ -80,9 +80,18 @@ int isElectron(Int_t num, vector<float>* elePt, vector<float>* eleEta, vector<un
 int isTau(Int_t num, vector<float>* tauPt, vector<float>* tauEta, vector<int>* tauDecayMode, vector<float>* tauDz, vector<bool>* tauByMVA6TightElectronRejection, vector<bool>* tauByLooseMuonRejection3, vector<bool>* tauByTightIsolationMVArun2v1DBoldDMwLT){
     int number = -1;
     for (int counter=0; counter<num; counter++){
-        if ((tauPt->at(counter)>20 && (fabs(tauEta->at(counter))<2.3) && (tauDecayMode->at(counter)==1 or tauDecayMode->at(counter)==3) && tauByMVA6TightElectronRejection->at(counter)==1 && tauByLooseMuonRejection3->at(counter)==1 && tauByTightIsolationMVArun2v1DBoldDMwLT->at(counter)==1 && tauDz->at(counter)<0.2) ){
-            number = counter;
-        }
+      bool kinematic = false;    
+      bool tauId = false;
+      bool decayModeCut = false;
+      bool tauIsolation = false;   
+      if( tauPt->at(counter) > 20 && fabs( tauEta->at(counter))< 2.3 && tauDz->at(counter)<0.2 )kinematic = true;
+      if( tauByMVA6TightElectronRejection->at(counter) == 1 && tauByLooseMuonRejection3->at(counter) == 1) tauId = true;  
+      if( (tauByTightIsolationMVArun2v1DBoldDMwLT->at(counter)==1)) tauIsolation = true;   
+      if( tauDecayMode->at(counter)==1 || tauDecayMode->at(counter)==3 ) decayModeCut = true;  
+      if(tauId==true && kinematic==true && tauIsolation==true && decayModeCut==true){    
+	number = counter;
+      }  
+
     }
     return number;
 }

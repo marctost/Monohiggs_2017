@@ -51,7 +51,9 @@ class post_analyzer_MC {
  public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   Int_t           fCurrent; //!current Tree number in a TChain
-  
+
+  std::vector<unsigned int> event_; 
+  std::vector<double> event_info;     
     // Fixed size dimensions of array or collections stored in the TTree if any.
   TFile *fileName; 
   TTree *tree;  
@@ -825,14 +827,15 @@ class post_analyzer_MC {
     virtual Int_t    Cut(Long64_t entry);
     virtual Int_t    GetEntry(Long64_t entry);
     virtual Long64_t LoadTree(Long64_t entry);
-    virtual void     Init(TTree *tree);
+    virtual void     Init(TChain *tree); 
+    //    virtual void     Init(TTree *tree);
     virtual void     Loop(Long64_t maxevents, int reportEvery, string SampleName,string save_name, string finalState);
-    virtual void     BookHistos(const char* file2);
-    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, const char* final_state);
-    virtual void     write_histos();
-
     virtual Bool_t   Notify();
     virtual void     Show(Long64_t entry = -1);
+    virtual void     BookHistos(const char* file2);
+    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, const char* final_state);
+    //virtual void     write_histos();
+
 };
 
 #endif
@@ -853,7 +856,7 @@ post_analyzer_MC::post_analyzer_MC(const char* file1, const char* file2)
   int maxFiles = -1;
   while ((filename = (TSystemFile*)next()) && fileNumber >  maxFiles)
   {
-    if(fileNumber > 1)
+    //    if(fileNumber > 1)
     {
         TString dataset = "ggtree_";
         TString  FullPathInputFile = (path+filename->GetName());
@@ -873,14 +876,15 @@ post_analyzer_MC::post_analyzer_MC(const char* file1, const char* file2)
 }
 
 
-
-
-
-
 post_analyzer_MC::~post_analyzer_MC()
 {
     if (!fChain) return;
     delete fChain->GetCurrentFile();
+    fileName->cd();
+    fileName->Write();
+    tree->Write();
+    fileName->Close();
+
 }
 
 Int_t post_analyzer_MC::GetEntry(Long64_t entry)
@@ -902,7 +906,7 @@ Long64_t post_analyzer_MC::LoadTree(Long64_t entry)
     return centry;
 }
 
-void post_analyzer_MC::Init(TTree *tree)
+void post_analyzer_MC::Init(TChain *tree)
 {
     // The Init() function is called when the selector needs to initialize
     // a new tree or chain. Typically here the branch addresses and branch
