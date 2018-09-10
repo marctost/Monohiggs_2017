@@ -1,4 +1,4 @@
 git pull
 git add -A
-git commit -m "updated .h and .C file to fill properly, more work need to be done to include all required variables"
+git commit -m "included plotting codes, makeplots_etau.sh and do_plots.sh"
 git push origin master
