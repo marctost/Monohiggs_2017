@@ -53,8 +53,12 @@ class post_analyzer_data {
     
     // Fixed size dimensions of array or collections stored in the TTree if any.
     
+    std::vector<unsigned int> event_;
+    std::vector<double> event_info; 
     
-    
+    TFile *fileName;
+    TTree *tree;
+
     TH1F *h_lep_1_En[25], *h_lep_1_Pt[25], *h_lep_1_eta[25], *h_lep_1_SCEta[25], *h_lep_1_phi[25],  *h_lep_1_SCPhi[25],  *h_lep_1_IDbit[25];
     
     TH1F *h_lep_2_En[25],*h_lep_2_Pt[25], *h_lep_2_eta[25], *h_lep_2_phi[25];
@@ -808,15 +812,17 @@ class post_analyzer_data {
     
     
     
-    post_analyzer_data(const char* file1);
+    post_analyzer_data(const char* file1, const char* file2);
     virtual ~post_analyzer_data();
     virtual Int_t    Cut(Long64_t entry);
     virtual Int_t    GetEntry(Long64_t entry);
     virtual Long64_t LoadTree(Long64_t entry);
-    virtual void     Init(TTree *tree);
-    virtual void     Loop(Long64_t maxEvents, int reportEvery, const char* save_name);
+    virtual void     Init(TChain *tree);
+    virtual void     Loop(Long64_t maxevents, int reportEvery, string SampleName,string save_name, string finalState);
     virtual Bool_t   Notify();
     virtual void     Show(Long64_t entry = -1);
+    virtual void     BookHistos(const char* file2);
+    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, TString final_state);
 };
 
 #endif
@@ -856,7 +862,7 @@ post_analyzer_data::post_analyzer_data(const char* file1, const char* file2)
     std::cout<<"All files added."<<std::endl;
     std::cout<<"Initializing chain."<<std::endl;
     Init(chain);
-    BookHistos(file2)
+    BookHistos(file2);
     
     
 }
@@ -885,7 +891,7 @@ Long64_t post_analyzer_data::LoadTree(Long64_t entry)
     return centry;
 }
 
-void post_analyzer_data::Init(TTree *tree)
+void post_analyzer_data::Init(TChain *tree)
 {
     // The Init() function is called when the selector needs to initialize
     // a new tree or chain. Typically here the branch addresses and branch

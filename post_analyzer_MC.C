@@ -115,7 +115,6 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	  
 	  
 	  // Create variables for easier use later, using a lepton number instead of name. More flexible
-	  std::cout<<"This works! P 1" <<endl;  
 	  numberOfEvents++;   
 	  vector<float>* pt_1;
 	  vector<float>* pt_2 = tauPt;
@@ -153,22 +152,17 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	  double weight=1.0;
 	  genWeight > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0.0;
 	  
-	  //fillHistos(1,weight,lept_num_1, lept_num_2, final_state);
-	  std::cout<<"This works! P 2" <<endl;  
 	  // met filter selection
             if (!(metFilters==0)) continue;
-            //fillHistos(2,weight,lept_num_1, lept_num_2, final_state);
 	    nMETFiltersPassed++; 
 	    
-	    std::cout<<"This works! P 3" <<endl;  
         
             // trigger selection
             // function "trig_num" is in the selections header, indicates which trigger is to be used
-            if (!(HLTEleMuX>>3&1==1)) continue;
-	    //            if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
-	    std::cout<<"This works! P 4" <<endl;  
-            //fillHistos(3,weight,lept_num_1, lept_num_2, final_state);
+	    if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
 	    nSingleTrgPassed++; 
+
+
             if (final_state=="mutau"){
                 lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
             }
@@ -182,9 +176,8 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
         
             // first lepton selection
             if (lept_num_1<0) continue;
-            //fillHistos(4,weight,lept_num_1, lept_num_2, final_state);
 	    nGoodElectronPassed++; 
-	    std::cout<<"This works! P 5" <<endl;  
+
             if (final_state=="mutau"){
                 // weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo)*trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo);
             }
@@ -195,14 +188,12 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             else if (final_state=="tautau"){
                 //lept_num_2 = isSecondTau(variables);
             }
-	    std::cout<<"This works! P 6.1" <<endl;
 
             // second lepton selection
             if (lept_num_2<0) continue;
-	    std::cout<<"This works! P 6.2" <<endl;
             fillHistos(5,weight,lept_num_1, lept_num_2, final_state);
 	    nGoodTauPassed++;
-	    std::cout<<"This works! P 6.3" <<endl;  
+
             // extra lepton rejection
             bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
             bool rejectMu = rejectMuon(nMu, muPt, muEta, muD0, muDz, muIDbit, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
@@ -210,11 +201,13 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             if (final_state=="mutau" && rejectEle==true) continue;
             else if (final_state=="etau" && rejectMu==true) continue;
             else if (final_state=="tautau" && (rejectEle==true || rejectMu==true)) continue;
-	    // fillHistos(6,weight,lept_num_1, lept_num_2, final_state);
+	    fillHistos(6,weight,lept_num_1, lept_num_2, final_state);
+	    nPassedThirdLepVeto++;
+
 
             // charge requirement selection
             if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
-            //fillHistos(7,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(7,weight,lept_num_1, lept_num_2, final_state);
 	    nGoodETauPassed++;  
         
             // this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
@@ -223,19 +216,14 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
         
             // dR selection
             if (higher_vars.dr<0.3) continue;
-            //fillHistos(8,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(8,weight,lept_num_1, lept_num_2, final_state);
 	    nDeltaRPassed++; 
-
-
-	    // third lepton veto comes here 
-	    nPassedThirdLepVeto++; 
-
 
 
 
             // bjet selection
             if (BjetVeto(nJet, jetCSV2BJetTags)==true) continue;
-            //fillHistos(9,weight,lept_num_1, lept_num_2, final_state);
+            fillHistos(9,weight,lept_num_1, lept_num_2, final_state);
 	    nPassedBjetVeto++;   
     /*
             if (higher_vars.vis_pt  ) continue;
@@ -254,10 +242,10 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	h_Events_level->SetBinContent(2, nMETFiltersPassed);
 	h_Events_level->SetBinContent(3, nSingleTrgPassed);          
 	h_Events_level->SetBinContent(4, nGoodElectronPassed);
-	h_Events_level->SetBinContent(5, nGoodTauPassed);	  
+	h_Events_level->SetBinContent(5, nGoodTauPassed);
+	h_Events_level->SetBinContent(8, nPassedThirdLepVeto);	  
 	h_Events_level->SetBinContent(6, nGoodETauPassed);
 	h_Events_level->SetBinContent(7, nDeltaRPassed);
-	h_Events_level->SetBinContent(8, nPassedThirdLepVeto); 
 	h_Events_level->SetBinContent(9, nPassedBjetVeto);
 		
 
@@ -272,9 +260,9 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	std::cout<<std::setw(20) <<std::right <<"SingleTrgPassed "<<nSingleTrgPassed<<std::endl;
 	std::cout<<std::setw(20) <<std::right <<"GoodElectronPassed "<<nGoodElectronPassed<<std::endl;
 	std::cout<<std::setw(20) <<std::right <<"GoodTauPassed "<<nGoodTauPassed<<std::endl;
+	std::cout<<std::setw(20) <<std::right <<"PassedThirdLepVeto "<<nPassedThirdLepVeto<<std::endl;
 	std::cout<<std::setw(20) <<std::right <<"opp charge "<<nGoodETauPassed<<std::endl;
 	std::cout<<std::setw(20) <<std::right <<"DeltaRPassed "<<nDeltaRPassed<<std::endl;
-	std::cout<<std::setw(20) <<std::right <<"PassedThirdLepVeto "<<nPassedThirdLepVeto<<std::endl;
 	std::cout<<std::setw(20) <<std::right <<"PassedBjetVeto "<<nPassedBjetVeto<<std::endl;
 	std::cout<<"*******************************************"<<std::endl;
 
@@ -342,49 +330,19 @@ void post_analyzer_MC::BookHistos(const char* file2)
 }
 
 //Fill the sequential histos at a particular spot in the sequence
-void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1_index, int lep_2_index, const char* final_state)
+void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1_index, int lep_2_index, TString final_state)
 {
     
-  h_pfMET[histoNumber]->Fill(pfMET,event_weight);
-  h_nVtx[histoNumber]->Fill(nVtx, event_weight);
-  h_nEvents[histoNumber]->Fill(isData, event_weight);
-  h_nJet[histoNumber]->Fill(nJet, event_weight);
+	h_pfMET[histoNumber]->Fill(pfMET,event_weight);
+	h_nVtx[histoNumber]->Fill(nVtx, event_weight);
+	h_nEvents[histoNumber]->Fill(isData, event_weight);
+	h_nJet[histoNumber]->Fill(nJet, event_weight);
  
-    //********** make the variables accesaable ************ 
-  /*    vector<float>* pt_1;
-    vector<float>* pt_2 = tauPt;
-    vector<float>* eta_1;
-    vector<float>* eta_2 = tauEta;
-    vector<float>* phi_1;
-    vector<float>* phi_2 = tauPhi;
-    vector<int>* charge_1;
-    vector<float>* charge_2 = tauCharge;
-    vector<float>* energy_1;
-    vector<float>* energy_2 = tauEnergy;
-    if (final_state=="mutau"){
-        pt_1 = muPt;
-        eta_1 = muEta;
-        phi_1 = muPhi;
-        charge_1 = muCharge;
-        energy_1 = muEn;
-    }
-    if (final_state=="etau"){
-        pt_1 = elePt;
-        eta_1 = eleEta;
-        phi_1 = elePhi;
-        charge_1 = eleCharge;
-        energy_1 = eleEn;
-    }
-  */
 
-    
-    // if (lep_1_index>-1 && lep_2_index>-1)
-    {
-
-      //variables_t higher_variables = makeHigherVariables(elePt->at(lep_1_index), tauPt->at(lep_2_index), eleEta->at(lep_1_index), tauEta->at(lep_2_index), elePhi->at(lep_1_index), tauPhi->at(lep_2_index), eleCharge->at(lep_1_index), tauCharge->at(lep_2_index), eleEn->at(lep_1_index), tauEnergy->at(lep_2_index), pfMET, pfMETPhi);
-
-      if (final_state == "etau")
+	cout<<final_state<<endl;
+        if (final_state == "etau")
 	{
+	  cout<<"WE here"<<endl;
 	  //*********** fill lep_1s  ***********
 	  h_lep_1_En[histoNumber]->Fill((eleEn->at(lep_1_index)),event_weight);
 	  h_lep_1_Pt[histoNumber]->Fill((elePt->at(lep_1_index)),event_weight);
@@ -399,8 +357,9 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
 	  h_lep_2_phi[histoNumber]->Fill(tauPhi->at(lep_2_index),event_weight);
       
 	}
-      if (final_state == "mutau")
+        if (final_state == "mutau")
         {
+          cout<<"does this work"<<endl;
           //*********** fill lep_1s  ***********
           h_lep_1_En[histoNumber]->Fill((muEn->at(lep_1_index)),event_weight);
           h_lep_1_Pt[histoNumber]->Fill((muPt->at(lep_1_index)),event_weight);
@@ -435,6 +394,6 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
       h_lep_1_Iso[histoNumber]->Fill(rel_Iso,event_weight);
       h_lep_2_Iso[histoNumber]->Fill(tauByTightIsolationMVArun2v1DBoldDMwLT->at(lep_2_index),event_weight);
       */
-    }
+    
     
 }

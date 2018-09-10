@@ -286,7 +286,7 @@ class post_analyzer_MC {
    vector<float>   *muPhi;
    vector<int>     *muCharge;
    vector<int>     *muType;
-   vector<int>     *muIDbit;
+   vector<unsigned short>     *muIDbit;
    vector<float>   *muD0;
    vector<float>   *muDz;
    vector<float>   *muSIP;
@@ -833,8 +833,7 @@ class post_analyzer_MC {
     virtual Bool_t   Notify();
     virtual void     Show(Long64_t entry = -1);
     virtual void     BookHistos(const char* file2);
-    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, const char* final_state);
-    //virtual void     write_histos();
+    virtual void     fillHistos(int histoNumber, double event_weight, int lep_1_index, int lep_2_index, TString final_state);
 
 };
 
