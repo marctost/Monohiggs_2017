@@ -138,8 +138,13 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
         
         	// trigger selection
         	// function "trig_num" is in the selections header, indicates which trigger is to be used
-        	if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
-		nSingleTrgPassed++;       
+            if (final_state=="etau"){
+	    	if (!(HLTEleMuX>>3&1==1)) continue;
+	    }
+	    if (final_state=="mutau"){
+                if (!(HLTEleMuX>>19&1==1)) continue;
+            }
+	    nSingleTrgPassed++; 
 
  
         	if (final_state=="mutau"){
@@ -160,7 +165,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
 
 
         	if (final_state=="mutau" or final_state=="etau"){
-            		lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
+            		lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, taubyTightIsolationMVArun2017v2DBoldDMwLT2017);
         	}
         	else if (final_state=="tautau"){
             		//lept_num_2 = isSecondTau(variables);
