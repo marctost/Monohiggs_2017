@@ -158,8 +158,13 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	    
         
             // trigger selection
-            // function "trig_num" is in the selections header, indicates which trigger is to be used
-	    if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
+	    // if (!(HLTEleMuX>>trig_num(final_state)&1==1)) continue;
+            if (final_state=="etau"){
+	    	if (!(HLTEleMuX>>3&1==1)) continue;
+	    }
+	    if (final_state=="mutau"){
+                if (!(HLTEleMuX>>19&1==1)) continue;
+            }
 	    nSingleTrgPassed++; 
 
 
@@ -178,10 +183,13 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             if (lept_num_1<0) continue;
 	    nGoodElectronPassed++; 
 
+	    // apply scale factor to tha muon only
             if (final_state=="mutau"){
-                // weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo)*trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), SF_histo);
+                weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1)) * trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1));
             }
         
+
+            // select the tau
             if (final_state=="mutau" or final_state=="etau"){
                 lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
             }
@@ -191,6 +199,8 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 
             // second lepton selection
             if (lept_num_2<0) continue;
+	    // apply tau scale factor
+	    weight = weight * tau_scale();
             fillHistos(5,weight,lept_num_1, lept_num_2, final_state);
 	    nGoodTauPassed++;
 
@@ -339,10 +349,8 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
 	h_nJet[histoNumber]->Fill(nJet, event_weight);
  
 
-	cout<<final_state<<endl;
         if (final_state == "etau")
 	{
-	  cout<<"WE here"<<endl;
 	  //*********** fill lep_1s  ***********
 	  h_lep_1_En[histoNumber]->Fill((eleEn->at(lep_1_index)),event_weight);
 	  h_lep_1_Pt[histoNumber]->Fill((elePt->at(lep_1_index)),event_weight);
@@ -359,7 +367,6 @@ void post_analyzer_MC::fillHistos(int histoNumber, double event_weight,int lep_1
 	}
         if (final_state == "mutau")
         {
-          cout<<"does this work"<<endl;
           //*********** fill lep_1s  ***********
           h_lep_1_En[histoNumber]->Fill((muEn->at(lep_1_index)),event_weight);
           h_lep_1_Pt[histoNumber]->Fill((muPt->at(lep_1_index)),event_weight);

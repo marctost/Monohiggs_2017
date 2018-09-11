@@ -22,18 +22,6 @@
 using namespace std;
 
 
-bool trig_num(const char* final_state){
-    int number;
-    if (final_state="mutau"){
-        number=19;
-    }
-    if (final_state=="etau"){
-        number=3;
-    }
-    return number;
-}
-
-
 int isMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<short unsigned int>* muIDbit, vector<float>* muDz, vector<float>* muD0, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
     int number = -1;
     int extra = 0;
