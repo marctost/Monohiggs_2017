@@ -1,4 +1,4 @@
 git pull
 git add -A
-git commit -m "included plotting codes, makeplots_etau.sh and do_plots.sh"
+git commit -m "updated header file based on new ntuples"
 git push origin master
