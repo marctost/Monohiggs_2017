@@ -22,7 +22,7 @@
 using namespace std;
 
 
-int isMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<short unsigned int>* muIDbit, vector<float>* muDz, vector<float>* muD0, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
+int isMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<int>* muIDbit, vector<float>* muDz, vector<float>* muD0, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
     int number = -1;
     int extra = 0;
     for (int counter=0; counter<num; counter++){
@@ -87,7 +87,7 @@ int isTau(Int_t num, vector<float>* tauPt, vector<float>* tauEta, vector<int>* t
 
 
 
-bool rejectMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<float>* muD0, vector<float>* muDz, vector<short unsigned int>* muIDbit, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
+bool rejectMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<float>* muD0, vector<float>* muDz, vector<int>* muIDbit, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
     bool reject=false;
     for (int counter=0; counter<num; counter++){
         float thisiszero=0;

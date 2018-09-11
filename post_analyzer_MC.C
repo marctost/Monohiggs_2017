@@ -191,7 +191,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 
             // select the tau
             if (final_state=="mutau" or final_state=="etau"){
-                lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, tauByTightIsolationMVArun2v1DBoldDMwLT);
+                lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, taubyTightIsolationMVArun2017v2DBoldDMwLT2017);
             }
             else if (final_state=="tautau"){
                 //lept_num_2 = isSecondTau(variables);
