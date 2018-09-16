@@ -801,7 +801,12 @@ post_analyzer_data::~post_analyzer_data()
 {
     if (!fChain) return;
     delete fChain->GetCurrentFile();
+    fileName->cd();
+    fileName->Write();
+    tree->Write();
+    fileName->Close();
 }
+
 Int_t post_analyzer_data::GetEntry(Long64_t entry)
 {
     // Read contents of entry.
