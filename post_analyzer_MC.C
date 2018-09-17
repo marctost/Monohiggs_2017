@@ -39,10 +39,10 @@
 #include "TFile.h"
 #include <math.h>
 #include <vector> */
-#include "myHelper.h"
-#include "selections.h"
-#include "scale_factors.h"
-#include "higher_vars.h"
+#include "helpers/myHelper.h"
+#include "helpers/selections.h"
+#include "helpers/scale_factors.h"
+#include "helpers/higher_vars.h"
 
 
 using namespace std;

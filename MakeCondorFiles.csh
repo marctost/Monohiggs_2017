@@ -25,9 +25,9 @@ getenv = true
 request_memory       = 1992
 request_disk         = 2048000
 Transfer_Input_Files = ${1}, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/RunBCDEF_mc_ID.root, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/EfficienciesAndSF_RunBtoF_Nov17Nov2017.root
-output               = \$(Process)_${6}.out
-error                = \$(Process)_${6}.err
-Log                  = \$(Process)_${6}.log
+output               = junk\$(Process)_${6}.out
+error                = junk\$(Process)_${6}.err
+Log                  = junk\$(Process)_${6}.log
 Queue
 EOF
 
