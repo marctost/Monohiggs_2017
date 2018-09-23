@@ -1,6 +1,5 @@
 ./rootcom post_analyzer_MC post_analyzer_MC
 
- mutau
 
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180907_144720/0000 DY1_mutau.root -1 10000 DY1_mutau mutau
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY2JetsToLL/180907_144749/0000 DY2_mutau.root -1 10000 DY2_mutau mutau
@@ -53,3 +52,14 @@
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/ZZTo4L_13TeV_powheg_pythia8/crab_ZZTo4L/180907_150729/0000 ZZ_4L_mutau.root -1 10000 ZZ_4L_mutau mutau
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/ZZTo4L_13TeV_powheg_pythia8/crab_ZZTo4L/180907_150729/0001 ZZ_4L_1_mutau.root -1 10000 ZZ_4L_1_mutau mutau
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/crab_ZZZ/180907_150930/0000 ZZZ_mutau.root -1 10000 ZZZ_mutau mutau
+
+
+
+mv *err junk/
+mv *out junk/
+mv *log junk/
+mv Job* junk/
+mv condor_* junk/
+
+
+

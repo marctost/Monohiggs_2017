@@ -1,9 +1,9 @@
 #!/bin/sh
-export pwd=/nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau
+export pwd=/nfs_scratch/tost/CMSSW_9_4_4/src/Monohiggs_2017
 cat>Job_${6}.sh<<EOF
 #!/bin/sh
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
-cd /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau
+cd /nfs_scratch/tost/CMSSW_9_4_4/src/Monohiggs_2017
 cmsenv
 cd \${_CONDOR_SCRATCH_DIR}
 ./${1} ${2} ${3} ${4} ${5} ${6}
@@ -11,7 +11,7 @@ EOF
 
 chmod 775 Job_${6}.sh
 
-cat>junk/condor_${6}<<EOF
+cat>condor_${6}<<EOF
 x509userproxy = /tmp/x509up_u10034
 universe = vanilla
 Executable = Job_${6}.sh
@@ -25,9 +25,9 @@ getenv = true
 request_memory       = 1992
 request_disk         = 2048000
 Transfer_Input_Files = ${1}, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/RunBCDEF_mc_ID.root, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/EfficienciesAndSF_RunBtoF_Nov17Nov2017.root
-output               = junk/$(Process)_${6}.out
-error                = junk/$(Process)_${6}.err
-Log                  = junk/$(Process)_${6}.log
+output               = \$(Process)_${6}.out
+error                = \$(Process)_${6}.err
+Log                  = \$(Process)_${6}.log
 Queue
 EOF
 
