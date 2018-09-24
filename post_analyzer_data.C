@@ -96,8 +96,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
       		}
 
         	// Create variables for easier use later, using a lepton number instead of name. More flexible
-                numberOfEvents++;
-          	vector<float>* pt_1;
+		vector<float>* pt_1;
           	vector<float>* pt_2 = tauPt;
           	vector<float>* eta_1;
           	vector<float>* eta_2 = tauEta;
@@ -125,12 +124,12 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
         
 
 		double weight = 1.0;
-
+		numberOfEvents+=weight;
 
         
         	// met filter selection
         	if (!(metFilters==0)) continue;
-		nMETFiltersPassed++;
+		nMETFiltersPassed+=weight;
    
         
         	// trigger selection
@@ -141,7 +140,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
 	    	if (final_state=="mutau"){
                 	if (!(HLTEleMuX>>19&1==1)) continue;
             	}
-	    	nSingleTrgPassed++; 
+	    	nSingleTrgPassed+=weight;
 
  
         	if (final_state=="mutau"){
@@ -157,7 +156,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
         
         	// first lepton selection
         	if (lept_num_1<0) continue;
-		nGoodElectronPassed++;       
+		nGoodElectronPassed+=weight;    
  
 
 
@@ -172,13 +171,13 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
         	// second lepton selection
         	if (lept_num_2<0) continue;
 		fillHistos(5,weight,lept_num_1, lept_num_2, final_state);
-            	nGoodTauPassed++;       
+            	nGoodTauPassed+=weight;
  
 
 	        // charge requirement selection
        		if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
             	fillHistos(6,weight,lept_num_1, lept_num_2, final_state);
-            	nGoodETauPassed++; 
+            	nGoodETauPassed+=weight;
         
         	// this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
         	variables_t higher_vars = makeHigherVariables(pt_1->at(lept_num_1), pt_2->at(lept_num_2), eta_1->at(lept_num_1), eta_2->at(lept_num_2), phi_1->at(lept_num_1), phi_2->at(lept_num_2), charge_1->at(lept_num_1), charge_2->at(lept_num_2), energy_1->at(lept_num_1), energy_2->at(lept_num_2), pfMET, pfMETPhi);
@@ -187,7 +186,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
         	// dR selection
         	if (higher_vars.dr<0.3) continue;
 		fillHistos(7,weight,lept_num_1, lept_num_2, final_state);
-            	nDeltaRPassed++;       
+            	nDeltaRPassed+=weight;
 
 
 
@@ -198,14 +197,14 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
 		if (final_state=="mutau" && rejectEle==true) continue;
                 else if (final_state=="etau" && rejectMu==true) continue;
                 else if (final_state=="tautau" && (rejectEle==true || rejectMu==true)) continue;
-                nPassedThirdLepVeto++;
+                nPassedThirdLepVeto+=weight;
                 fillHistos(8,weight,lept_num_1, lept_num_2, final_state);
 
  
         	// bjet selection
         	if (BjetVeto(nJet, jetCSV2BJetTags)==true) continue;
         	fillHistos(9,weight,lept_num_1, lept_num_2, final_state);
-		nPassedBjetVeto++;        
+		nPassedBjetVeto+=weight;
 
 
         /*
@@ -231,7 +230,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
         	h_Events_level->SetBinContent(9, nPassedBjetVeto);
 
 
-        	h_Events_level->Scale(weight);
+               
         	tree->Fill();
         }
 
