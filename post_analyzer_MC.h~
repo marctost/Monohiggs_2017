@@ -847,8 +847,8 @@ public :
 
    //   post_analyzer_MC(TTree *tree=0);
     
-    post_analyzer_MC(const char* file1, const char* file2);
-    virtual ~post_analyzer_MC();
+    post_analyzer_data(const char* file1, const char* file2);
+    virtual ~post_analyzer_data();
     virtual Int_t    Cut(Long64_t entry);
     virtual Int_t    GetEntry(Long64_t entry);
     virtual Long64_t LoadTree(Long64_t entry);

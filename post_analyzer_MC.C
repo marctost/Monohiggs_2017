@@ -94,7 +94,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	int lept_num_1=-1;
 	int lept_num_2=-1;
 
-	int nHLTPassed,n_eventWeight, nSingleTrgPassed, nGoodElectronPassed, nElectronPtPassed, nGoodTauPassed, nTauPtPassed,numberOfEvents,nMETPassed, nDPhiPassed, nqcdden,nqcdnum, nMETFiltersPassed,nLeptonVetoPassed,nPassedBjetVeto,nNoisyCrystals,nDPhiJetMETPassed, nGoodETauPassed,nDeltaRPassed,nPassedThirdLepVeto, nPassedHiggsPtcut, nPassedVisibleMasscut, nPassedMETcut, nFinal_afterSelections;
+	float nHLTPassed,n_eventWeight, nSingleTrgPassed, nGoodElectronPassed, nElectronPtPassed, nGoodTauPassed, nTauPtPassed,numberOfEvents,nMETPassed, nDPhiPassed, nqcdden,nqcdnum, nMETFiltersPassed,nLeptonVetoPassed,nPassedBjetVeto,nNoisyCrystals,nDPhiJetMETPassed, nGoodETauPassed,nDeltaRPassed,nPassedThirdLepVeto, nPassedHiggsPtcut, nPassedVisibleMasscut, nPassedMETcut, nFinal_afterSelections;
 	nHLTPassed = n_eventWeight = nSingleTrgPassed = nGoodElectronPassed = nElectronPtPassed = nGoodTauPassed = nTauPtPassed= numberOfEvents = nMETPassed = nDPhiPassed = nqcdden= nqcdnum=nMETFiltersPassed= nLeptonVetoPassed=nPassedBjetVeto=nNoisyCrystals=nDPhiJetMETPassed= nGoodETauPassed = nDeltaRPassed= nPassedThirdLepVeto=nPassedHiggsPtcut=nPassedVisibleMasscut=nPassedMETcut=nFinal_afterSelections=0;
 
 	TH1F* h_Events_level= new TH1F("Events_level","Events at each level of selection",15,0,30);  
@@ -115,7 +115,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	  
 	  
 	  // Create variables for easier use later, using a lepton number instead of name. More flexible
-	  numberOfEvents++;   
+	     
 	  vector<float>* pt_1;
 	  vector<float>* pt_2 = tauPt;
 	  vector<float>* eta_1;
@@ -143,18 +143,24 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
           
 	  // housekeeping, making sure that we use the inclusive W+jets sample correctly.
 	  if ((string(save_name)).rfind("WJets2J",0)==0){
-	    if (genHT>200){
+	    if (genHT>100){
 	      continue;
 	    }
 	  }
-	  
+	  double inspected_event_weight = 1.0; 
+	  fabs(genWeight) > 0.0 ? inspected_event_weight *= genWeight/fabs(genWeight) : inspected_event_weight = 0.0;
+	  nInspected_genWeighted += inspected_event_weight;  
+	  nInspected += 1; 
+
 	  // Making sure that no events have negative weights
 	  double weight=1.0;
-	  genWeight > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0.0;
-	  
+	  //genWeight > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0.0;
+	  fabs(genWeight) > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0;  
 	  // met filter selection
-            if (!(metFilters==0)) continue;
-	    nMETFiltersPassed++; 
+          
+	  numberOfEvents+=weight;                                                 
+	    if (!(metFilters==0)) continue;
+	    nMETFiltersPassed+=weight;
 	    
         
             // trigger selection
@@ -165,7 +171,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	    if (final_state=="mutau"){
                 if (!(HLTEleMuX>>19&1==1)) continue;
             }
-	    nSingleTrgPassed++; 
+	    nSingleTrgPassed+=weight;
 
 
             if (final_state=="mutau"){
@@ -181,7 +187,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
         
             // first lepton selection
             if (lept_num_1<0) continue;
-	    nGoodElectronPassed++; 
+	    nGoodElectronPassed+=weight;
 
 	    // apply scale factor to tha muon and the electron
             if (final_state=="mutau"){
@@ -206,12 +212,12 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	    // apply tau scale factor
 	    weight = weight * tau_scale();
             fillHistos(5,weight,lept_num_1, lept_num_2, final_state);
-	    nGoodTauPassed++;
+	    nGoodTauPassed+=weight;
 
             // charge requirement selection
             if (!(charge_1->at(lept_num_1)+charge_2->at(lept_num_2)==0)) continue;
             fillHistos(6,weight,lept_num_1, lept_num_2, final_state);
-	    nGoodETauPassed++;  
+	    nGoodETauPassed+=weight;
 
             // this variable is a structure, and has the contents: vis_pt, inv_mass, mt_total and dr. Used like: higher_vars.mt_total
             variables_t higher_vars = makeHigherVariables(pt_1->at(lept_num_1), pt_2->at(lept_num_2), eta_1->at(lept_num_1), eta_2->at(lept_num_2), phi_1->at(lept_num_1), phi_2->at(lept_num_2), charge_1->at(lept_num_1), charge_2->at(lept_num_2), energy_1->at(lept_num_1), energy_2->at(lept_num_2), pfMET, pfMETPhi);
@@ -221,7 +227,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             // dR selection
             if (higher_vars.dr<0.3) continue;
             fillHistos(7,weight,lept_num_1, lept_num_2, final_state);
-	    nDeltaRPassed++; 
+	    nDeltaRPassed+=weight;
 
             // extra lepton rejection
             bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
@@ -231,7 +237,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             else if (final_state=="etau" && rejectMu==true) continue;
             else if (final_state=="tautau" && (rejectEle==true || rejectMu==true)) continue;
 	    fillHistos(8,weight,lept_num_1, lept_num_2, final_state);
-	    nPassedThirdLepVeto++;
+	    nPassedThirdLepVeto+=weight;
 
 
         
@@ -241,7 +247,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             // bjet selection
             if (BjetVeto(nJet, jetCSV2BJetTags)==true) continue;
             fillHistos(9,weight,lept_num_1, lept_num_2, final_state);
-	    nPassedBjetVeto++;   
+	    nPassedBjetVeto+=weight;
     /*
             if (higher_vars.vis_pt  ) continue;
             fillHistos(10,weight,lept_num_1, lept_num_2, final_state);
@@ -265,8 +271,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	h_Events_level->SetBinContent(7, nDeltaRPassed);
 	h_Events_level->SetBinContent(9, nPassedBjetVeto);
 		
-
-	h_Events_level->Scale(weight); 
+ 
 	tree->Fill(); 
 	}
 	
