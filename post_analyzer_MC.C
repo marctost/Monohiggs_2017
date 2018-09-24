@@ -183,11 +183,15 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
             if (lept_num_1<0) continue;
 	    nGoodElectronPassed++; 
 
-	    // apply scale factor to tha muon only
+	    // apply scale factor to tha muon and the electron
             if (final_state=="mutau"){
-                weight=weight*ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1)) * trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1));
+                weight=weight*mu_ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1)) * mu_trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1));
             }
         
+	    if (final_state=="etau"){
+                weight = weight * ele_Zvtx_SF() * ele_ID_SF(elePt->at(lept_num_1), eleEta->at(lept_num_1)) * ele_eff_SF(elePt->at(lept_num_1), eleEta->at(lept_num_1));
+            }
+
 
             // select the tau
             if (final_state=="mutau" or final_state=="etau"){
