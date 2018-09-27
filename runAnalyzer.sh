@@ -8,4 +8,4 @@
 
 #./post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017/ZHToTauTau_M125_13TeV_powheg_pythia8/crab_ZHToTauTau/180903_160340/0000/ ZHToTauTau_test.root 10000 100 ZHToTauTau mutau
 
-./post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/ZHToTauTau_M125_13TeV_powheg_pythia8/crab_ZHToTauTau/180907_145732/0000/ ZHToTauTau_test.root 10000 1000 ZHToTauTau etau
+./post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/ZHToTauTau_M125_13TeV_powheg_pythia8/crab_ZHToTauTau/180907_145732/0000/ ZHToTauTau_test.root 10000 1000 ZHToTauTau mutau

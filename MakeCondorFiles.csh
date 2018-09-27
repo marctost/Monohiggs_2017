@@ -24,7 +24,7 @@ on_exit_remove       = (ExitBySignal == FALSE && (ExitCode == 0 || ExitCode == 4
 getenv = true
 request_memory       = 1992
 request_disk         = 2048000
-Transfer_Input_Files = ${1}, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/RunBCDEF_mc_ID.root, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/EfficienciesAndSF_RunBtoF_Nov17Nov2017.root, /nfs_scratch/tost/CMSSW_9_4_4/src/Monohiggs_2017/helpers/ele_ID.root, /nfs_scratch/tost/CMSSW_9_4_4/src/Monohiggs_2017/helpers/ele_efficiency_Tight94X.root
+Transfer_Input_Files = ${1}, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/RunBCDEF_mc_ID.root, /nfs_scratch/tost/CMSSW_9_4_4/src/analyzer/mutau/EfficienciesAndSF_RunBtoF_Nov17Nov2017.root, /nfs_scratch/tost/CMSSW_9_4_4/src/Monohiggs_2017/ele_ID.root, /nfs_scratch/tost/CMSSW_9_4_4/src/Monohiggs_2017/ele_efficiency_Tight94X.root
 output               = \$(Process)_${6}.out
 error                = \$(Process)_${6}.err
 Log                  = \$(Process)_${6}.log
