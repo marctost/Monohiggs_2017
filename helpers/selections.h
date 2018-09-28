@@ -22,16 +22,17 @@
 using namespace std;
 
 
-int isMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<int>* muIDbit, vector<float>* muDz, vector<float>* muD0, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso){
+int isMuon(Int_t num, vector<float>* muPt, vector<float>* muEta, vector<int>* muIDbit, vector<float>* muDz, vector<float>* muD0, vector<float>* muPFNeuIso, vector<float>* muPFPhoIso, vector<float>* muPFPUIso, vector<float>* muPFChIso, TString final_state){
     int number = -1;
     int extra = 0;
     for (int counter=0; counter<num; counter++){
         float thisiszero=0;
         float muPhoPU = muPFNeuIso->at(counter) + muPFPhoIso->at(counter) - 0.5*muPFPUIso->at(counter);
         float mu_iso_tight = (muPFChIso->at(counter) + TMath::Max(thisiszero,muPhoPU))/(muPt->at(counter));
-        
+        float iso_val = 0.15;
+        if (final_state=="mutau_WCR") iso_val=0.25;
         // Selections are here
-        if ((muPt->at(counter)>10) && (fabs(muEta->at(counter))<2.4) && (muIDbit->at(counter)>>0&1==1) && (muDz->at(counter)<0.2) && (muD0->at(counter)<0.045) && mu_iso_tight<0.3){
+        if ((muPt->at(counter)>10) && (fabs(muEta->at(counter))<2.4) && (muIDbit->at(counter)>>0&1==1) && (muDz->at(counter)<0.2) && (muD0->at(counter)<0.045) && mu_iso_tight<iso_val){
             number = counter;
             extra++;
         }
@@ -65,7 +66,7 @@ int isElectron(Int_t num, vector<float>* elePt, vector<float>* eleEta, vector<sh
 
 
 
-int isTau(Int_t num, vector<float>* tauPt, vector<float>* tauEta, vector<int>* tauDecayMode, vector<float>* tauDz, vector<bool>* tauByMVA6TightElectronRejection, vector<bool>* tauByLooseMuonRejection3, vector<bool>* tauByTightIsolationMVArun2v1DBoldDMwLT){
+int isTau(Int_t num, vector<float>* tauPt, vector<float>* tauEta, vector<int>* tauDecayMode, vector<float>* tauDz, vector<bool>* tauByMVA6TightElectronRejection, vector<bool>* tauByLooseMuonRejection3, vector<bool>* tauByLooseIsolationMVArun2v1DBoldDMwLT, vector<bool>* tauByTightIsolationMVArun2v1DBoldDMwLT, TString final_state){
     int number = -1;
     for (int counter=0; counter<num; counter++){
       bool kinematic = false;    
@@ -74,8 +75,14 @@ int isTau(Int_t num, vector<float>* tauPt, vector<float>* tauEta, vector<int>* t
       bool tauIsolation = false;   
       if( tauPt->at(counter) > 20 && fabs( tauEta->at(counter))< 2.3 && tauDz->at(counter)<0.2 )kinematic = true;
       if( tauByMVA6TightElectronRejection->at(counter) == 1 && tauByLooseMuonRejection3->at(counter) == 1) tauId = true;  
-      if( (tauByTightIsolationMVArun2v1DBoldDMwLT->at(counter)==1)) tauIsolation = true;   
-      if( tauDecayMode->at(counter)==1 || tauDecayMode->at(counter)==3 ) decayModeCut = true;  
+      if( (tauByLooseIsolationMVArun2v1DBoldDMwLT->at(counter)==1) && final_state=="mutau_WCR") tauIsolation = true;
+      if( (tauByTightIsolationMVArun2v1DBoldDMwLT->at(counter)==1) && final_state!="mutau_WCR") tauIsolation = true;
+      if (final_state=="mutau"){
+          if( tauDecayMode->at(counter)==1 || tauDecayMode->at(counter)==3 ) decayModeCut = true;  
+      }
+      else if (final_state=="mutau_WCR"){
+          if ( tauDecayMode->at(counter) > 0) decayModeCut = true;
+      }
       if(tauId==true && kinematic==true && tauIsolation==true && decayModeCut==true){    
 	number = counter;
       }  

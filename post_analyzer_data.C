@@ -106,7 +106,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
           	vector<float>* charge_2 = tauCharge;
           	vector<float>* energy_1;
           	vector<float>* energy_2 = tauEnergy;
-          	if (final_state=="mutau"){
+          	if (final_state=="mutau" or final_state=="mutau_WCR"){
             		pt_1 = muPt;
             		eta_1 = muEta;
             		phi_1 = muPhi;
@@ -137,14 +137,14 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
             	if (final_state=="etau"){
 	    		if (!(HLTEleMuX>>3&1==1)) continue;
 	    	}
-	    	if (final_state=="mutau"){
+	    	if (final_state=="mutau" or final_state=="mutau_WCR"){
                 	if (!(HLTEleMuX>>19&1==1)) continue;
             	}
 	    	nSingleTrgPassed+=weight;
 
  
-        	if (final_state=="mutau"){
-            		lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
+        	if (final_state=="mutau" or final_state=="mutau_WCR"){
+            		lept_num_1 = isMuon(nMu, muPt, muEta, muIDbit, muDz, muD0, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso, final_state);
         	}
         	else if (final_state=="etau"){
             		lept_num_1 = isElectron(nEle, elePt, eleEta, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
@@ -160,8 +160,8 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
  
 
 
-        	if (final_state=="mutau" or final_state=="etau"){
-            		lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, taubyTightIsolationMVArun2017v2DBoldDMwLT2017);
+        	if (final_state=="mutau" or final_state=="etau" or final_state=="mutau_WCR"){
+            		lept_num_2 = isTau(nTau, tauPt, tauEta, tauDecayMode, taudz, tauByMVA6TightElectronRejection, tauByLooseMuonRejection3, taubyLooseIsolationMVArun2017v2DBoldDMwLT2017, taubyTightIsolationMVArun2017v2DBoldDMwLT2017, final_state);
         	}
         	else if (final_state=="tautau"){
             		//lept_num_2 = isSecondTau(variables);
@@ -194,7 +194,7 @@ void post_analyzer_data::Loop(Long64_t maxevents, int reportEvery, string Sample
 		bool rejectEle = rejectElectron(nEle, elePt, eleEta, eleD0, eleDz, eleIDbit, elePFNeuIso, elePFPhoIso, elePFPUIso, elePFChIso);
 		bool rejectMu = rejectMuon(nMu, muPt, muEta, muD0, muDz, muIDbit, muPFNeuIso, muPFPhoIso, muPFPUIso, muPFChIso);
 
-		if (final_state=="mutau" && rejectEle==true) continue;
+		if ((final_state=="mutau" or final_state=="mutau_WCR") && rejectEle==true) continue;
                 else if (final_state=="etau" && rejectMu==true) continue;
                 else if (final_state=="tautau" && (rejectEle==true || rejectMu==true)) continue;
                 nPassedThirdLepVeto+=weight;
@@ -340,7 +340,7 @@ void post_analyzer_data::fillHistos(int histoNumber, double event_weight,int lep
           h_lep_2_phi[histoNumber]->Fill(tauPhi->at(lep_2_index),event_weight);
 
         }
-        if (final_state == "mutau")
+        if (final_state == "mutau" or final_state=="mutau_WCR")
         {
           //*********** fill lep_1s  ***********
           h_lep_1_En[histoNumber]->Fill((muEn->at(lep_1_index)),event_weight);

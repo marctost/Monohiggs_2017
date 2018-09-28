@@ -6,7 +6,7 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd /nfs_scratch/tost/CMSSW_9_4_4/src/Monohiggs_2017
 cmsenv
 cd \${_CONDOR_SCRATCH_DIR}
-./${1} ${2} ${3} ${4} ${5} ${6}
+./${1} ${2} ${3} ${4} ${5} ${6} ${7}
 EOF
 
 chmod 775 Job_${6}.sh
