@@ -327,15 +327,6 @@ class post_analyzer_data {
    vector<bool>    *tauByVLooseIsolationMVArun2v1DBoldDMwLT;
    vector<bool>    *tauByVLooseIsolationMVArun2v1PWnewDMwLT;
    vector<bool>    *tauByVLooseIsolationMVArun2v1PWoldDMwLT;
-   vector<float>   *taubyIsolationMVArun2017v2DBoldDMwLTraw2017;
-   vector<bool>    *taubyVVLooseIsolationMVArun2017v2DBoldDMwLT2017;
-   vector<bool>    *taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017;
-   // vector<bool>    *taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017;
-   vector<bool>    *taubyLooseIsolationMVArun2017v2DBoldDMwLT2017;
-   vector<bool>    *taubyMediumIsolationMVArun2017v2DBoldDMwLT2017;
-   vector<bool>    *taubyTightIsolationMVArun2017v2DBoldDMwLT2017;
-   vector<bool>    *taubyVTightIsolationMVArun2017v2DBoldDMwLT2017;
-   vector<bool>    *taubyVVTightIsolationMVArun2017v2DBoldDMwLT2017;
    vector<float>   *tauEta;
    vector<float>   *tauPhi;
    vector<float>   *tauPt;
@@ -657,15 +648,6 @@ class post_analyzer_data {
    TBranch        *b_tauByVLooseIsolationMVArun2v1DBoldDMwLT;   //!
    TBranch        *b_tauByVLooseIsolationMVArun2v1PWnewDMwLT;   //!
    TBranch        *b_tauByVLooseIsolationMVArun2v1PWoldDMwLT;   //!
-   TBranch        *b_taubyIsolationMVArun2017v2DBoldDMwLTraw2017;   //!
-   TBranch        *b_taubyVVLooseIsolationMVArun2017v2DBoldDMwLT2017;   //!
-   TBranch        *b_taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017;   //!
-   // TBranch        *b_taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017;   //!
-   TBranch        *b_taubyLooseIsolationMVArun2017v2DBoldDMwLT2017;   //!
-   TBranch        *b_taubyMediumIsolationMVArun2017v2DBoldDMwLT2017;   //!
-   TBranch        *b_taubyTightIsolationMVArun2017v2DBoldDMwLT2017;   //!
-   TBranch        *b_taubyVTightIsolationMVArun2017v2DBoldDMwLT2017;   //!
-   TBranch        *b_taubyVVTightIsolationMVArun2017v2DBoldDMwLT2017;   //!
    TBranch        *b_tauEta;   //!
    TBranch        *b_tauPhi;   //!
    TBranch        *b_tauPt;   //!
@@ -1048,15 +1030,6 @@ void post_analyzer_data::Init(TChain *tree)
    tauByVLooseIsolationMVArun2v1DBoldDMwLT = 0;
    tauByVLooseIsolationMVArun2v1PWnewDMwLT = 0;
    tauByVLooseIsolationMVArun2v1PWoldDMwLT = 0;
-   taubyIsolationMVArun2017v2DBoldDMwLTraw2017 = 0;
-   taubyVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
-   taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
-   taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
-   taubyLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
-   taubyMediumIsolationMVArun2017v2DBoldDMwLT2017 = 0;
-   taubyTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
-   taubyVTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
-   taubyVVTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
    tauEta = 0;
    tauPhi = 0;
    tauPt = 0;
@@ -1381,15 +1354,6 @@ void post_analyzer_data::Init(TChain *tree)
    fChain->SetBranchAddress("tauByVLooseIsolationMVArun2v1DBoldDMwLT", &tauByVLooseIsolationMVArun2v1DBoldDMwLT, &b_tauByVLooseIsolationMVArun2v1DBoldDMwLT);
    fChain->SetBranchAddress("tauByVLooseIsolationMVArun2v1PWnewDMwLT", &tauByVLooseIsolationMVArun2v1PWnewDMwLT, &b_tauByVLooseIsolationMVArun2v1PWnewDMwLT);
    fChain->SetBranchAddress("tauByVLooseIsolationMVArun2v1PWoldDMwLT", &tauByVLooseIsolationMVArun2v1PWoldDMwLT, &b_tauByVLooseIsolationMVArun2v1PWoldDMwLT);
-   fChain->SetBranchAddress("taubyIsolationMVArun2017v2DBoldDMwLTraw2017", &taubyIsolationMVArun2017v2DBoldDMwLTraw2017, &b_taubyIsolationMVArun2017v2DBoldDMwLTraw2017);
-   fChain->SetBranchAddress("taubyVVLooseIsolationMVArun2017v2DBoldDMwLT2017", &taubyVVLooseIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyVVLooseIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017", &taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017);
-//    fChain->SetBranchAddress("taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017", &taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyVLooseIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("taubyLooseIsolationMVArun2017v2DBoldDMwLT2017", &taubyLooseIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyLooseIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("taubyMediumIsolationMVArun2017v2DBoldDMwLT2017", &taubyMediumIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyMediumIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("taubyTightIsolationMVArun2017v2DBoldDMwLT2017", &taubyTightIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyTightIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("taubyVTightIsolationMVArun2017v2DBoldDMwLT2017", &taubyVTightIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyVTightIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("taubyVVTightIsolationMVArun2017v2DBoldDMwLT2017", &taubyVVTightIsolationMVArun2017v2DBoldDMwLT2017, &b_taubyVVTightIsolationMVArun2017v2DBoldDMwLT2017);
    fChain->SetBranchAddress("tauEta", &tauEta, &b_tauEta);
    fChain->SetBranchAddress("tauPhi", &tauPhi, &b_tauPhi);
    fChain->SetBranchAddress("tauPt", &tauPt, &b_tauPt);
