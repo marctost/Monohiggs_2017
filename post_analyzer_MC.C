@@ -78,6 +78,21 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	TString sample = TString(SampleName);
 	TString final_state = TString(finalState);
 
+
+	// Open the files the weight the stuff accordingly
+	TFile *muTriggerSFfile = TFile::Open("EfficienciesAndSF_RunBtoF_Nov17Nov2017.root");
+	TH2D *muTriggerHisto = (TH2D*) muTriggerSFfile->Get("IsoMu27_PtEtaBins/efficienciesMC/abseta_pt_MC");
+	TFile *muIDSFfile = TFile::Open("RunBCDEF_mc_ID.root");
+	TH2D *muIDHisto = (TH2D*) muIDSFfile->Get("NUM_TightID_DEN_genTracks_pt_abseta");
+	
+	TFile *eleIDSFfile = TFile::Open("ele_ID.root");
+	TH2D *eleIDHisto = (TH2D*) eleIDSFfile->Get("EGamma_SF2D");
+
+	TFile *eleEffSFfile = TFile::Open("ele_efficiency_Tight94X.root");
+	TH2D *eleEffHisto = (TH2D*) eleEffSFfile->Get("EGamma_SF2D");
+
+
+
 	Long64_t nentries = fChain->GetEntries();
 	std::cout<<"Coming in: "<<std::endl;  
 	std::cout<<"nentries:"<<nentries<<std::endl;
@@ -190,11 +205,11 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 
 	    // apply scale factor to tha muon and the electron
             if (final_state=="mutau" or final_state=="mutau_WCR"){
-                weight=weight*mu_ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1)) * mu_trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1));
+                weight=weight*mu_ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), muIDHisto) * mu_trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), muTriggerHisto);
             }
         
 	    if (final_state=="etau"){
-                weight = weight * ele_Zvtx_SF() * ele_ID_SF(elePt->at(lept_num_1), eleEta->at(lept_num_1)) * ele_eff_SF(elePt->at(lept_num_1), eleEta->at(lept_num_1));
+                weight = weight * ele_Zvtx_SF() * ele_ID_SF(elePt->at(lept_num_1), eleEta->at(lept_num_1), eleIDHisto) * ele_eff_SF(elePt->at(lept_num_1), eleEta->at(lept_num_1), eleEffHisto);
             }
 
 
@@ -260,18 +275,18 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
      
 	//    write_histos();
 
-	h_Events_level->SetBinContent(1, numberOfEvents);
-	h_Events_level->SetBinContent(2, nMETFiltersPassed);
-	h_Events_level->SetBinContent(3, nSingleTrgPassed);          
-	h_Events_level->SetBinContent(4, nGoodElectronPassed);
-	h_Events_level->SetBinContent(5, nGoodTauPassed);
-	h_Events_level->SetBinContent(8, nPassedThirdLepVeto);	  
-	h_Events_level->SetBinContent(6, nGoodETauPassed);
-	h_Events_level->SetBinContent(7, nDeltaRPassed);
-	h_Events_level->SetBinContent(9, nPassedBjetVeto);
+	    h_Events_level->SetBinContent(1, numberOfEvents);
+	    h_Events_level->SetBinContent(2, nMETFiltersPassed);
+	    h_Events_level->SetBinContent(3, nSingleTrgPassed);          
+	    h_Events_level->SetBinContent(4, nGoodElectronPassed);
+	    h_Events_level->SetBinContent(5, nGoodTauPassed);
+	    h_Events_level->SetBinContent(8, nPassedThirdLepVeto);	  
+	    h_Events_level->SetBinContent(6, nGoodETauPassed);
+	    h_Events_level->SetBinContent(7, nDeltaRPassed);
+	    h_Events_level->SetBinContent(9, nPassedBjetVeto);
 		
  
-	tree->Fill(); 
+	    tree->Fill(); 
 	}
 	
 	std::cout<<"*******************************************"<<std::endl;
