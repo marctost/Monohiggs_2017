@@ -53,6 +53,7 @@ Double_t Luminosity = 41521.0;//Lumi for inclusive
 void make_hist(string input_file, string output_file, string histname_string, string sample_name, string name_ ,  Double_t weight_lumi , bool isNLO, double ngen_, double xsec)
 {
 
+
   TString histname = TString(histname_string);
   TString sample = TString(sample_name); 
   TString input_name = TString(input_file);
@@ -74,7 +75,7 @@ void make_hist(string input_file, string output_file, string histname_string, st
 
   outputFile = new TFile(output_name, "UPDATE");
   outputFile->cd(histname);
-  
+
   if(histname == "Events_level_"){
     TH1F* histo_events_level = (TH1F*)((TH1F*)file_input->Get("Events_level"))->Clone(TString(name+"_"+histname));
     // cout<<"3. updating file for "<< histname<<endl;
@@ -108,35 +109,43 @@ void make_hist(string input_file, string output_file, string histname_string, st
 
   }
   else{
-    TH1F* histo_etau_0 = (TH1F*)((TH1F*)file_input->Get(histname+"0"))->Clone(TString(name+"_"+histname+"0"));
+    cout<<histname+"0"<<endl;
+    TH1F* histo_mutau_0 = (TH1F*)((TH1F*)file_input->Get(histname+"0"))->Clone(TString(name+"_"+histname+"0"));
     TH1F* histo_etau_1 = (TH1F*)((TH1F*)file_input->Get(histname+"1"))->Clone(TString(name+"_"+histname+"1"));
     TH1F* histo_etau_2 = (TH1F*)((TH1F*)file_input->Get(histname+"2"))->Clone(TString(name+"_"+histname+"2"));
     TH1F* histo_etau_3 = (TH1F*)((TH1F*)file_input->Get(histname+"3"))->Clone(TString(name+"_"+histname+"3"));
     TH1F* histo_etau_4 = (TH1F*)((TH1F*)file_input->Get(histname+"4"))->Clone(TString(name+"_"+histname+"4"));
     TH1F* histo_etau_5 = (TH1F*)((TH1F*)file_input->Get(histname+"5"))->Clone(TString(name+"_"+histname+"5"));
     TH1F* histo_etau_6 = (TH1F*)((TH1F*)file_input->Get(histname+"6"))->Clone(TString(name+"_"+histname+"6"));
+
+
     //cout<<"declared histograms"<<endl;
     // cout<<"2. updating file for "<< histname<<endl;
     if(sample=="data_obs"){ net_weight = 1.0;  }
     if(sample=="data_obs" && histname =="pfMET_"){ net_weight = 0.0;  }
-    histo_etau_0->Scale(net_weight);
+
+    histo_mutau_0->Scale(net_weight);
     histo_etau_1->Scale(net_weight);
     histo_etau_2->Scale(net_weight);
     histo_etau_3->Scale(net_weight);
     histo_etau_4->Scale(net_weight);
     histo_etau_5->Scale(net_weight);
     histo_etau_6->Scale(net_weight);
+   
 
-    histo_etau_0->Write();
+    histo_mutau_0->Write();
     histo_etau_1->Write();
     histo_etau_2->Write();
     histo_etau_3->Write();
     histo_etau_4->Write();
     histo_etau_5->Write();
     histo_etau_6->Write();
+
     
   }
-  /* const int Nbins_0 = histo_etau_0->GetXaxis()->GetNbins();
+
+
+  /* const int Nbins_0 = histo_mutau_0->GetXaxis()->GetNbins();
     const int Nbins_1 = histo_etau_1->GetXaxis()->GetNbins();
     const int Nbins_2 = histo_etau_2->GetXaxis()->GetNbins();
     const int Nbins_3 = histo_etau_3->GetXaxis()->GetNbins();
@@ -218,6 +227,7 @@ int main(int argc, char** argv)
 
   Double_t ngen = nbevt->GetBinContent(1);
   Double_t nFinal = nbevt->GetBinContent(12);
+
 
   std::cout<<"XXXXXXXXXXXXX  "<<"ngen = "<< ngen<<"   XXXXXXXXXXXXX "<<'\n';
   Double_t xs=1.0; Double_t weight=1.0; Double_t luminosity=Luminosity;
@@ -339,7 +349,8 @@ int main(int argc, char** argv)
   
   cout.setf(ios::fixed, ios::floatfield);
   cout.precision(10);
-  
+
+
   
   std::vector<string> histnames;
   histnames.clear();
@@ -512,6 +523,9 @@ int main(int argc, char** argv)
     plot(histnames[i],leg_xoffsets[i],leg_yoffsets[i],xaxis_titles[i],plotnames[i]);
   }
   */
+
+
+
   TString output_ = TString(output);
 
   TFile* f_output;
@@ -543,16 +557,15 @@ int main(int argc, char** argv)
 
 
   f_output->Close();
-
   // cout<<"This workks too before makehist" <<endl;
-  make_hist(input, output, "Muon_En_", sample, name, weight, true, ngen , xs);
-  make_hist(input, output, "Tau_En_", sample , name,weight, true, ngen , xs);
-  make_hist(input, output, "Muon_eta_", sample ,  name,weight, true, ngen , xs);
-  make_hist(input, output, "Tau_eta_", sample ,name,weight, true, ngen , xs);
-  make_hist(input, output, "Muon_Pt_", sample ,name,weight, true, ngen , xs);
-  make_hist(input, output, "Tau_Pt_", sample ,name,weight, true, ngen , xs);
-  make_hist(input, output, "Muon_phi_", sample ,name,weight, true, ngen , xs);
-  make_hist(input, output, "Tau_phi_", sample ,name,weight,  true, ngen , xs);
+  make_hist(input, output, "Lepton_1_En_", sample, name, weight, true, ngen , xs);
+  make_hist(input, output, "Lepton_2_En_", sample , name,weight, true, ngen , xs);
+  make_hist(input, output, "Lepton_1_eta_", sample ,  name,weight, true, ngen , xs);
+  make_hist(input, output, "Lepton_2_eta_", sample ,name,weight, true, ngen , xs);
+  make_hist(input, output, "Lepton_1_Pt_", sample ,name,weight, true, ngen , xs);
+  make_hist(input, output, "Lepton_2_Pt_", sample ,name,weight, true, ngen , xs);
+  make_hist(input, output, "Lepton_1_phi_", sample ,name,weight, true, ngen , xs);
+  make_hist(input, output, "Lepton_2_phi_", sample ,name,weight,  true, ngen , xs);
   make_hist(input, output, "nVtx_", sample ,name,weight, true, ngen , xs);
   make_hist(input, output, "pfMET_", sample ,name,weight, true, ngen , xs);
   make_hist(input, output, "h_dPhi_", sample ,name,weight, true, ngen , xs);

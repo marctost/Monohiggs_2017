@@ -1,0 +1,2 @@
+Sample name,Number used for scaling,xsec,luminosity,net weight,initial number of events,events passing metFilter,events passing single ele trg,Good ele,Good tau,opposite charge selection,delta R cut,third lepton veto,bJet veto,Higgs pt cut,Visible mass cut,events after met cut
+data_obs,1284994560.000000,1.000000,41521.000000,1.000000,1284994560.000000,1282971008.000000,485606560.000000,367313984.000000,382366.000000,286115.000000,286108.000000,284395.000000,242807.000000,0.000000,0.000000,0.000000

@@ -1,4 +1,4 @@
-0;136;0c#!/bin/bash
+#!/bin/bash
 #rm plots/png/estimate.csv
 
 histNumber="0"
