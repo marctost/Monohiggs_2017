@@ -284,10 +284,14 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	    h_Events_level->SetBinContent(6, nGoodETauPassed);
 	    h_Events_level->SetBinContent(7, nDeltaRPassed);
 	    h_Events_level->SetBinContent(9, nPassedBjetVeto);
-		
+	
  
 	    tree->Fill(); 
 	}
+
+	fileName->cd();
+	h_Events_level->Write();
+
 	
 	std::cout<<"*******************************************"<<std::endl;
 	std::cout<<"****************** new post_analyzer*************************"<<std::endl;
