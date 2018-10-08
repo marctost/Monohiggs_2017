@@ -1,15 +1,15 @@
 ./rootcom post_analyzer_MC post_analyzer_MC
 
 
-./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180907_144720/0000/ DY1_${1}.root -1 10000 DY1_${1} ${1}
-./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY2JetsToLL/180907_144749/0000/ DY2_${1}.root -1 10000 DY2_${1} ${1}
-./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY3JetsToLL/180907_144820/0000/ DY3_${1}.root -1 10000 DY3_${1} ${1}
-./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY4JetsToLL/180907_144850/0000/ DY4_${1}.root -1 10000 DY4_${1} ${1}
+./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY1JetsToLL/180907_144720/0000/ DY1jet_${1}.root -1 10000 DY1jet_${1} ${1}
+./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY2JetsToLL/180907_144749/0000/ DY2jet_${1}.root -1 10000 DY2jet_${1} ${1}
+./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY3JetsToLL/180907_144820/0000/ DY3jet_${1}.root -1 10000 DY3jet_${1} ${1}
+./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_DY4JetsToLL/180907_144850/0000/ DY4jet_${1}.root -1 10000 DY4jet_${1} ${1}
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL/180907_151157/0000/ DY_${1}.root -1 10000 DY_${1} ${1}
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL/180907_151157/0001 DY_1_${1}.root -1 10000 DY_1_${1} ${1}
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL/180907_151157/0002 DY_2_${1}.root -1 10000 DY_2_${1} ${1}
-./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/EWKWMinus2Jets_WToLNu_M-50_TuneCP5_13TeV-madgraph-pythia8/crab_EWKWMinus2Jets_WToLNu/180907_145401/0000/ EWKminus_${1}.root -1 10000EWKminus_${1} ${1}
-./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/EWKWPlus2Jets_WToLNu_M-50_TuneCP5_13TeV-madgraph-pythia8/crab_EWKWPlus2Jets_WToLNu/180907_145431/0000/ EWKplus_${1}.root -1 10000EWKplus_${1} ${1}
+./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/EWKWMinus2Jets_WToLNu_M-50_TuneCP5_13TeV-madgraph-pythia8/crab_EWKWMinus2Jets_WToLNu/180907_145401/0000/ EWKminus_${1}.root -1 10000 EWKminus_${1} ${1}
+./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/EWKWPlus2Jets_WToLNu_M-50_TuneCP5_13TeV-madgraph-pythia8/crab_EWKWPlus2Jets_WToLNu/180907_145431/0000/ EWKplus_${1}.root -1 10000 EWKplus_${1} ${1}
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/EWKZ2Jets_ZToLL_M-50_TuneCP5_13TeV-madgraph-pythia8/crab_EWKZ2Jets_ZToLL/180907_145503/0000/ EWKZjet_LL_${1}.root -1 10000 EWKZjet_LL_${1} ${1}
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/EWKZ2Jets_ZToNuNu_TuneCP5_13TeV-madgraph-pythia8/crab_EWKZ2Jets_ZToNuNu/180907_145533/0000/ EWKZjet_nunu_${1}.root -1 10000 EWKZjet_nunu_${1} ${1}
 ./MakeCondorFiles.csh post_analyzer_MC /hdfs/store/user/jmadhusu/MonoHiggs_MC_2017_1/GluGluHToTauTau_M125_13TeV_powheg_pythia8/crab_GluGluHToTauTau/180907_145603/0000/ ggtoTauTau_${1}.root -1 10000 ggtoTauTau_${1} ${1}

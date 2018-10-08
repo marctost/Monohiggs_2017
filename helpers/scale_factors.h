@@ -31,6 +31,14 @@ float mu_trigger_SF(float pt, float eta, TH2D *histo){
     return SF;
 }
 
+float mu_ISO_SF(float pt, float eta, TH2D *histo){
+    Int_t bin_x = histo->GetXaxis()->FindBin(pt);
+    Int_t bin_y = histo->GetYaxis()->FindBin(eta);
+    float SF = histo->GetBinContent(bin_x, bin_y);
+    return SF;
+}
+
+
 float tau_scale(){
     float tau_SF = 0.89;
     return tau_SF;

@@ -82,6 +82,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 	// Open the files the weight the stuff accordingly
 	TFile *muTriggerSFfile = TFile::Open("EfficienciesAndSF_RunBtoF_Nov17Nov2017.root");
 	TH2D *muTriggerHisto = (TH2D*) muTriggerSFfile->Get("IsoMu27_PtEtaBins/efficienciesMC/abseta_pt_MC");
+
 	TFile *muIDSFfile = TFile::Open("RunBCDEF_mc_ID.root");
 	TH2D *muIDHisto = (TH2D*) muIDSFfile->Get("NUM_TightID_DEN_genTracks_pt_abseta");
 	
@@ -90,6 +91,9 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 
 	TFile *eleEffSFfile = TFile::Open("ele_efficiency_Tight94X.root");
 	TH2D *eleEffHisto = (TH2D*) eleEffSFfile->Get("EGamma_SF2D");
+
+	TFile *muISOSFfile = TFile::Open("RunBCDEF_mc_ISO.root");
+	TH2D *muISOHisto = (TH2D*) muISOSFfile("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
 
 
 
@@ -169,14 +173,13 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 
 	  // Making sure that no events have negative weights
 	  double weight=1.0;
-	  //genWeight > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0.0;
-	  fabs(genWeight) > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0;  
+
 	  // met filter selection
-          
 	  numberOfEvents+=weight;                                                 
 	    if (!(metFilters==0)) continue;
 	    nMETFiltersPassed+=weight;
-	    
+
+            fabs(genWeight) > 0.0 ? weight *= genWeight/fabs(genWeight) : weight = 0;	    
         
             // trigger selection
             if (final_state=="etau"){
@@ -205,7 +208,7 @@ void post_analyzer_MC::Loop(Long64_t maxevents, int reportEvery, string SampleNa
 
 	    // apply scale factor to tha muon and the electron
             if (final_state=="mutau" or final_state=="mutau_WCR"){
-                weight=weight*mu_ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), muIDHisto) * mu_trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), muTriggerHisto);
+                weight=weight*mu_ID_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), muIDHisto) * mu_trigger_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), muTriggerHisto) * mu_ISO_SF(muPt->at(lept_num_1), muEta->at(lept_num_1), muISOHisto);
             }
         
 	    if (final_state=="etau"){
